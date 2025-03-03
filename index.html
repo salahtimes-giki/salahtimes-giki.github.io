@@ -252,17 +252,20 @@
         
         @media (max-width: 768px) {
             .main-times {
-                flex-direction: column;
-            }
-            
-            .primary-time {
-                width: 100%;
-                margin-bottom: 20px;
-            }
-            
-            .time-display {
-                font-size: 2rem;
-            }
+        flex-direction: column;
+        align-items: center; /* Center items horizontally */
+        justify-content: center;
+        text-align: center;
+    }
+
+    .primary-time {
+        width: 80%; /* Adjust width for better centering */
+        margin-bottom: 20px;
+    }
+
+    .time-display {
+        font-size: 2rem;
+    }
             
             .daily-inspiration {
                 flex-direction: column;
