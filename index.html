@@ -331,6 +331,10 @@
                     <div class="prayer-name">Isha</div>
                     <div class="prayer-time" id="today-isha"></div>
                 </div>
+                <div class="prayer-card">
+                    <div class="prayer-name">Salatul-Jumu'ah</div>
+                    <div class="prayer-time" id="today-friday_prayer"></div>
+                </div>
             </div>
         </div>
         
@@ -410,7 +414,8 @@
             dhuhr: "01:45 PM",
             asr: "05:00 PM",
             maghrib: "06:15 PM",  // This will be overridden by iftar times
-            isha: "08:15 PM"
+            isha: "08:15 PM",
+            friday_prayer: "1:30 PM"
         };
         
         // Function to draw the analog clock
@@ -541,6 +546,8 @@
                 document.getElementById('today-asr').textContent = fixedPrayerTimes.asr;
                 document.getElementById('today-maghrib').textContent = ramadanTimes[ramadanDay][1]; // Use iftar time for maghrib
                 document.getElementById('today-isha').textContent = fixedPrayerTimes.isha;
+                document.getElementById('today-friday_prayer').textContent = fixedPrayerTimes.friday_prayer;
+
             } else {
                 islamicDateEl.textContent = "Not Ramadan";
                 
@@ -553,6 +560,8 @@
                 document.getElementById('today-asr').textContent = fixedPrayerTimes.asr;
                 document.getElementById('today-maghrib').textContent = fixedPrayerTimes.maghrib;
                 document.getElementById('today-isha').textContent = fixedPrayerTimes.isha;
+                document.getElementById('today-friday_prayer').textContent = fixedPrayerTimes.friday_prayer;
+
             }
         }
         
