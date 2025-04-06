@@ -1,14 +1,12 @@
-<!--
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/x-icon" href="favicon.ico">
-    <title>GIKI Ramadan Prayer Times</title>
-    <!-- Updated font import to include Uthmanic Script font
+    <title>GIKI Prayer Times</title>
+    <!-- Font imports -->
     <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu&display=swap" rel="stylesheet">
-    <!-- Added KFGQPC Uthmanic Script font
     <style>
         @font-face {
             font-family: 'KFGQPC Uthmanic Script';
@@ -27,7 +25,6 @@
             min-height: 100vh;
         }
         
-        /* Updated Arabic text style to use Uthmanic Script font */
         .arabic-text {
             font-family: 'KFGQPC Uthmanic Script', serif;
             direction: rtl;
@@ -75,35 +72,6 @@
         .islamic-date {
             font-weight: bold;
             color: #4fc3f7;
-        }
-        
-        .main-times {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 40px;
-        }
-        
-        .primary-time {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            padding: 20px;
-            text-align: center;
-            width: 45%;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .primary-time h2 {
-            margin-top: 0;
-            color: #4fc3f7;
-            font-size: 1.8rem;
-        }
-        
-        .time-display {
-            font-size: 2.5rem;
-            font-weight: bold;
-            margin: 10px 0;
-            color: #fff;
         }
         
         .daily-prayers {
@@ -230,13 +198,6 @@
             transform: rotate(180deg);
         }
         
-        .note {
-            text-align: center;
-            font-style: italic;
-            color: #a1b9ff;
-            margin: 20px 0;
-        }
-        
         footer {
             text-align: center;
             margin-top: 30px;
@@ -252,23 +213,35 @@
             font-style: italic;
         }
         
+        .next-prayer {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .next-prayer h2 {
+            margin-top: 0;
+            color: #4fc3f7;
+            margin-bottom: 10px;
+        }
+        
+        .countdown {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #fff;
+        }
+        
+        .next-prayer-name {
+            font-size: 1.5rem;
+            color: #a1b9ff;
+            margin-bottom: 10px;
+        }
+        
         @media (max-width: 768px) {
-            .main-times {
-        flex-direction: column;
-        align-items: center; /* Center items horizontally */
-        justify-content: center;
-        text-align: center;
-    }
-
-    .primary-time {
-        width: 80%; /* Adjust width for better centering */
-        margin-bottom: 20px;
-    }
-
-    .time-display {
-        font-size: 2rem;
-    }
-            
             .daily-inspiration {
                 flex-direction: column;
             }
@@ -286,23 +259,17 @@
             <div class="clock-container">
                 <canvas id="clock" width="80" height="80"></canvas>
             </div>
-            <h1>GIKI Ramadan Prayer Timings</h1>
+            <h1>GIKI Prayer Timings</h1>
             <div class="date-display">
                 Today: <span id="current-date"></span> | 
                 Islamic Date: <span class="islamic-date" id="islamic-date"></span>
             </div>
         </header>
         
-        <div class="main-times">
-            <div class="primary-time">
-                <h2>Sehri Ends</h2>
-                <div class="time-display" id="today-sehri"></div>
-            </div>
-            
-            <div class="primary-time">
-                <h2>Iftar Time</h2>
-                <div class="time-display" id="today-iftar"></div>
-            </div>
+        <div class="next-prayer">
+            <h2>Next Prayer</h2>
+            <div class="next-prayer-name" id="next-prayer-name">Loading...</div><h5>    in</h5>
+            <div class="countdown" id="countdown">00:00:00</div>
         </div>
         
         <div class="daily-prayers">
@@ -332,9 +299,10 @@
                     <div class="prayer-name">Isha</div>
                     <div class="prayer-time" id="today-isha"></div>
                 </div>
+                
                 <div class="prayer-card">
-                    <div class="prayer-name">Salatul-Jumu'ah</div>
-                    <div class="prayer-time" id="today-friday_prayer"></div>
+                    <div class="prayer-name">Jumu'ah</div>
+                    <div class="prayer-time" id="today-friday-prayer"></div>
                 </div>
             </div>
         </div>
@@ -361,63 +329,28 @@
             </div>
         </div>
         
-        <div class="note">Note: 1 minute preventative difference in Sehri (-1 min) & Iftar (+1 min)</div>
-        
         <footer>
-            <p>GIKI Ramadan Prayer Timings Calendar. Updated for Ramadan 2025.</p>
+            <p>GIKI Prayer Timings Calendar. Updated for 2025.</p>
         </footer>
     </div>
 
     <script>
-        // Ramadan 2025 start date - March 2, 2025
-        const RAMADAN_START_DATE = new Date(2025, 2, 2); // March 2, 2025 (0-indexed month)
-        const RAMADAN_DAYS = 30;
-        
-        // Actual Sehri and Iftar times for GIKI
-        // Format: [sehri time, iftar time, gregorian date]
-        const ramadanTimes = [
-            ["05:13 AM", "6:08 PM", "02 Mar 2025"], // 1st Ramadan
-            ["05:12 AM", "6:08 PM", "03 Mar 2025"],
-            ["05:11 AM", "6:09 PM", "04 Mar 2025"],
-            ["05:09 AM", "6:10 PM", "05 Mar 2025"],
-            ["05:08 AM", "6:11 PM", "06 Mar 2025"],
-            ["05:07 AM", "6:12 PM", "07 Mar 2025"],
-            ["05:05 AM", "6:13 PM", "08 Mar 2025"],
-            ["05:04 AM", "6:13 PM", "09 Mar 2025"],
-            ["05:03 AM", "6:14 PM", "10 Mar 2025"],
-            ["05:01 AM", "6:15 PM", "11 Mar 2025"], // 10th Ramadan
-            ["05:00 AM", "6:16 PM", "12 Mar 2025"],
-            ["04:59 AM", "6:17 PM", "13 Mar 2025"],
-            ["04:57 AM", "6:17 PM", "14 Mar 2025"],
-            ["04:56 AM", "6:18 PM", "15 Mar 2025"],
-            ["04:55 AM", "6:19 PM", "16 Mar 2025"],
-            ["04:53 AM", "6:20 PM", "17 Mar 2025"],
-            ["04:52 AM", "6:21 PM", "18 Mar 2025"],
-            ["04:50 AM", "6:21 PM", "19 Mar 2025"],
-            ["04:49 AM", "6:22 PM", "20 Mar 2025"],
-            ["04:47 AM", "6:23 PM", "21 Mar 2025"], // 20th Ramadan
-            ["04:46 AM", "6:24 PM", "22 Mar 2025"],
-            ["04:44 AM", "6:24 PM", "23 Mar 2025"],
-            ["04:43 AM", "6:25 PM", "24 Mar 2025"],
-            ["04:42 AM", "6:26 PM", "25 Mar 2025"],
-            ["04:40 AM", "6:27 PM", "26 Mar 2025"],
-            ["04:39 AM", "6:27 PM", "27 Mar 2025"],
-            ["04:37 AM", "6:28 PM", "28 Mar 2025"],
-            ["04:36 AM", "6:29 PM", "29 Mar 2025"],
-            ["04:34 AM", "6:30 PM", "30 Mar 2025"],
-            ["04:33 AM", "6:31 PM", "31 Mar 2025"]  // 30th Ramadan
-        ];
-        
-        // Fixed prayer times - edit these directly in the code
-        // These times remain the same unless changed in the code
-        const fixedPrayerTimes = {
-            fajr: "05:10 AM",
+        // Prayer time data - sample fixed prayer times for demonstration
+        const prayerTimes = {
+            fajr: "05:20 AM",
             dhuhr: "01:45 PM",
-            asr: "05:15 PM",
-            maghrib: "06:15 PM",  // This will be overridden by iftar times
-            isha: "08:15 PM",
-            friday_prayer: "1:30 PM"
+            asr: "05:30 PM",
+            maghrib: "06:37 PM",
+            isha: "08:30 PM",
+            fridayPrayer: "01:30 PM"
         };
+        
+        // Islamic month names
+        const islamicMonths = [
+            "Muharram", "Safar", "Rabi' al-Awwal", "Rabi' al-Thani",
+            "Jumada al-Awwal", "Jumada al-Thani", "Rajab", "Sha'ban",
+            "Ramadan", "Shawwal", "Dhu al-Qa'dah", "Dhu al-Hijjah"
+        ];
         
         // Function to draw the analog clock
         function drawClock() {
@@ -503,26 +436,96 @@
             return date.toLocaleDateString('en-US', options);
         }
         
-        // Function to get Islamic date
-        function getIslamicDate(gregorianDate) {
-            // Calculate days since Ramadan started
-            const daysSinceStart = Math.floor((gregorianDate - RAMADAN_START_DATE) / (1000 * 60 * 60 * 24));
-            if (daysSinceStart >= 0 && daysSinceStart < RAMADAN_DAYS) {
-                return `${daysSinceStart + 1} Ramadan 1446`;
-            } else {
-                return "Not Ramadan";
-            }
+        // Function to get approximate Islamic date
+        // Note: This is a simple approximation and might not be accurate
+        function getIslamicDate() {
+            const today = new Date();
+            // Approximate Islamic date for 2025
+            // This is just an example - in a real application, use a proper Hijri calendar library
+            const islamicDay = ((today.getDate() + 11) % 30) + 1;
+            const islamicMonth = islamicMonths[(today.getMonth() + 2) % 12];
+            const islamicYear = 1446; // Approximate for 2025
+            
+            return `${islamicDay} ${islamicMonth} ${islamicYear}`;
         }
         
-        // Function to get Ramadan day number (0-based index) for today
-        function getRamadanDayIndex() {
-            const today = new Date();
-            const daysSinceStart = Math.floor((today - RAMADAN_START_DATE) / (1000 * 60 * 60 * 24));
+        // Function to parse time string to Date object
+        function parseTimeString(timeStr) {
+            const [time, period] = timeStr.split(' ');
+            let [hours, minutes] = time.split(':');
             
-            if (daysSinceStart >= 0 && daysSinceStart < RAMADAN_DAYS) {
-                return daysSinceStart;
+            hours = parseInt(hours);
+            minutes = parseInt(minutes);
+            
+            if (period === 'PM' && hours < 12) {
+                hours += 12;
+            } else if (period === 'AM' && hours === 12) {
+                hours = 0;
             }
-            return -1; // Not Ramadan
+            
+            const today = new Date();
+            return new Date(today.getFullYear(), today.getMonth(), today.getDate(), hours, minutes, 0);
+        }
+        
+        // Function to find next prayer
+        function findNextPrayer() {
+            const now = new Date();
+            const prayers = [
+                { name: "Fajr", time: parseTimeString(prayerTimes.fajr) },
+                { name: "Dhuhr", time: parseTimeString(prayerTimes.dhuhr) },
+                { name: "Asr", time: parseTimeString(prayerTimes.asr) },
+                { name: "Maghrib", time: parseTimeString(prayerTimes.maghrib) },
+                { name: "Isha", time: parseTimeString(prayerTimes.isha) }
+            ];
+            
+            // Check if it's Friday
+            const isFriday = now.getDay() === 5; // 5 is Friday in JavaScript
+            if (isFriday) {
+                prayers[2] = { name: "Jumu'ah", time: parseTimeString(prayerTimes.fridayPrayer) };
+            }
+            
+            let nextPrayer = null;
+            for (const prayer of prayers) {
+                if (prayer.time > now) {
+                    nextPrayer = prayer;
+                    break;
+                }
+            }
+            
+            // If no next prayer today, the next prayer is Fajr tomorrow
+            if (!nextPrayer) {
+                const tomorrow = new Date(now);
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                const fajrTime = parseTimeString(prayerTimes.fajr);
+                nextPrayer = { 
+                    name: "Fajr (Tomorrow)", 
+                    time: new Date(tomorrow.getFullYear(), tomorrow.getMonth(), tomorrow.getDate(), 
+                                  fajrTime.getHours(), fajrTime.getMinutes(), 0) 
+                };
+            }
+            
+            return nextPrayer;
+        }
+        
+        // Function to update countdown
+        function updateCountdown() {
+            const nextPrayer = findNextPrayer();
+            
+            document.getElementById('next-prayer-name').textContent = nextPrayer.name;
+            
+            const now = new Date();
+            const diff = nextPrayer.time - now;
+            
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+            
+            const formattedTime = 
+                String(hours).padStart(2, '0') + ':' + 
+                String(minutes).padStart(2, '0') + ':' + 
+                String(seconds).padStart(2, '0');
+            
+            document.getElementById('countdown').textContent = formattedTime;
         }
         
         // Function to update today's display
@@ -532,51 +535,38 @@
             
             const today = new Date();
             currentDateEl.textContent = formatDate(today);
+            islamicDateEl.textContent = getIslamicDate();
             
-            const ramadanDay = getRamadanDayIndex();
-            if (ramadanDay >= 0) {
-                islamicDateEl.textContent = `${ramadanDay + 1} Ramadan 1446`;
-                
-                // Update today's sehri and iftar times
-                document.getElementById('today-sehri').textContent = ramadanTimes[ramadanDay][0];
-                document.getElementById('today-iftar').textContent = ramadanTimes[ramadanDay][1];
-                
-                // Update fixed prayer times
-                document.getElementById('today-fajr').textContent = fixedPrayerTimes.fajr;
-                document.getElementById('today-dhuhr').textContent = fixedPrayerTimes.dhuhr;
-                document.getElementById('today-asr').textContent = fixedPrayerTimes.asr;
-                document.getElementById('today-maghrib').textContent = ramadanTimes[ramadanDay][1]; // Use iftar time for maghrib
-                document.getElementById('today-isha').textContent = fixedPrayerTimes.isha;
-                document.getElementById('today-friday_prayer').textContent = fixedPrayerTimes.friday_prayer;
-
-            } else {
-                islamicDateEl.textContent = "Not Ramadan";
-                
-                // If not Ramadan, display fixed prayer times anyway
-                document.getElementById('today-sehri').textContent = "N/A";
-                document.getElementById('today-iftar').textContent = "N/A";
-                
-                document.getElementById('today-fajr').textContent = fixedPrayerTimes.fajr;
-                document.getElementById('today-dhuhr').textContent = fixedPrayerTimes.dhuhr;
-                document.getElementById('today-asr').textContent = fixedPrayerTimes.asr;
-                document.getElementById('today-maghrib').textContent = fixedPrayerTimes.maghrib;
-                document.getElementById('today-isha').textContent = fixedPrayerTimes.isha;
-                document.getElementById('today-friday_prayer').textContent = fixedPrayerTimes.friday_prayer;
-
-            }
+            // Update prayer times
+            document.getElementById('today-fajr').textContent = prayerTimes.fajr;
+            document.getElementById('today-dhuhr').textContent = prayerTimes.dhuhr;
+            document.getElementById('today-asr').textContent = prayerTimes.asr;
+            document.getElementById('today-maghrib').textContent = prayerTimes.maghrib;
+            document.getElementById('today-isha').textContent = prayerTimes.isha;
+            document.getElementById('today-friday-prayer').textContent = prayerTimes.fridayPrayer;
         }
         
-        // Enhanced Quranic verse data with Arabic and translation
+        // Updated Quranic verses related to prayer, ease, and self-reflection
         const quranVerses = [
             {
-                arabic: "إِنَّ مَعَ الْعُسْرِ يُسْرًا",
-                english: "Indeed, with hardship will be ease.",
-                source: "Surah Ash-Sharh (94:6)"
+                arabic: "وَأَقِمِ الصَّلَاةَ ۖ إِنَّ الصَّلَاةَ تَنْهَىٰ عَنِ الْفَحْشَاءِ وَالْمُنكَرِ",
+                english: "Establish prayer. Indeed, prayer prohibits immorality and wrongdoing.",
+                source: "Surah Al-Ankabut (29:45)"
             },
             {
-                arabic: "فَإِنَّ مَعَ الْعُسْرِ يُسْرًا، إِنَّ مَعَ الْعُسْرِ يُسْرًا",
-                english: "So verily, with the hardship, there is relief. Verily, with the hardship, there is relief.",
-                source: "Surah Ash-Sharh (94:5-6)"
+                arabic: "وَاصْبِرْ وَمَا صَبْرُكَ إِلَّا بِاللَّهِ",
+                english: "And be patient, and your patience is not but through Allah.",
+                source: "Surah An-Nahl (16:127)"
+            },
+            {
+                arabic: "الَّذِينَ آمَنُوا وَتَطْمَئِنُّ قُلُوبُهُم بِذِكْرِ اللَّهِ ۗ أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ",
+                english: "Those who have believed and whose hearts are assured by the remembrance of Allah. Unquestionably, by the remembrance of Allah hearts are assured.",
+                source: "Surah Ar-Ra'd (13:28)"
+            },
+            {
+                arabic: "فَاذْكُرُونِي أَذْكُرْكُمْ وَاشْكُرُوا لِي وَلَا تَكْفُرُونِ",
+                english: "So remember Me; I will remember you. And be grateful to Me and do not deny Me.",
+                source: "Surah Al-Baqarah (2:152)"
             },
             {
                 arabic: "وَإِذَا سَأَلَكَ عِبَادِي عَنِّي فَإِنِّي قَرِيبٌ ۖ أُجِيبُ دَعْوَةَ الدَّاعِ إِذَا دَعَانِ",
@@ -584,52 +574,50 @@
                 source: "Surah Al-Baqarah (2:186)"
             },
             {
-                arabic: "يَا أَيُّهَا الَّذِينَ آمَنُوا كُتِبَ عَلَيْكُمُ الصِّيَامُ كَمَا كُتِبَ عَلَى الَّذِينَ مِن قَبْلِكُمْ لَعَلَّكُمْ تَتَّقُونَ",
-                english: "O you who have believed, decreed upon you is fasting as it was decreed upon those before you that you may become righteous.",
-                source: "Surah Al-Baqarah (2:183)"
+                arabic: "الَّذِينَ هُمْ فِي صَلَاتِهِمْ خَاشِعُونَ",
+                english: "Who are humbly submissive during their prayer.",
+                source: "Surah Al-Mu'minun (23:2)"
             },
             {
-                arabic: "لَا يُكَلِّفُ اللَّهُ نَفْسًا إِلَّا وُسْعَهَا",
-                english: "Allah does not burden a soul beyond that it can bear.",
-                source: "Surah Al-Baqarah (2:286)"
-            },
-            {
-                arabic: "شَهْرُ رَمَضَانَ الَّذِي أُنْزِلَ فِيهِ الْقُرْآنُ هُدًى لِلنَّاسِ وَبَيِّنَاتٍ مِنَ الْهُدَىٰ وَالْفُرْقَانِ",
-                english: "The month of Ramadan is that in which was revealed the Quran, a guidance for the people and clear proofs of guidance and criterion.",
-                source: "Surah Al-Baqarah (2:185)"
-            },
-            {
-                arabic: "وَكُلُوا وَاشْرَبُوا حَتَّىٰ يَتَبَيَّنَ لَكُمُ الْخَيْطُ الْأَبْيَضُ مِنَ الْخَيْطِ الْأَسْوَدِ مِنَ الْفَجْرِ",
-                english: "And eat and drink until the white thread of dawn becomes distinct to you from the black thread [of night].",
-                source: "Surah Al-Baqarah (2:187)"
+                arabic: "وَاسْتَعِينُوا بِالصَّبْرِ وَالصَّلَاةِ",
+                english: "And seek help through patience and prayer.",
+                source: "Surah Al-Baqarah (2:45)"
             }
         ];
         
-        // Enhanced Hadith data
+        // Updated Hadith data related to prayer, ease, and self-reflection
         const hadiths = [
             {
-                text: "When the month of Ramadan starts, the gates of the heaven are opened and the gates of Hell are closed and the devils are chained.",
-                source: "Sahih al-Bukhari 1899"
+                text: "The five daily prayers and the Friday prayer until the next Friday prayer, and Ramadan until the next Ramadan, are expiations for whatever sins come in between, so long as one refrains from major sins.",
+                source: "Sahih Muslim"
             },
             {
-                text: "Whoever fasts during Ramadan out of sincere faith and hoping to attain Allah's rewards, then all his past sins will be forgiven.",
-                source: "Sahih al-Bukhari 38"
+                text: "The key to Paradise is prayer, and the key to prayer is cleanliness.",
+                source: "Ahmad and Tirmidhi"
             },
             {
-                text: "The Prophet (ﷺ) said, 'Whoever does not give up forged speech and evil actions, Allah is not in need of his leaving his food and drink.'",
-                source: "Sahih al-Bukhari 1903"
+                text: "Prayer is the pillar of religion. Whoever establishes it has established religion, and whoever neglects it has demolished religion.",
+                source: "Al-Bayhaqi"
             },
             {
-                text: "Allah's Messenger (ﷺ) said: 'When the month of Ramadan begins, the gates of Paradise are opened, the gates of Hell are closed, and the devils are chained.'",
-                source: "Sahih al-Bukhari 3277"
+                text: "The Prophet (ﷺ) was asked, 'Which deed is most beloved to Allah?' He said, 'Prayer at its proper time.'",
+                source: "Sahih al-Bukhari"
             },
             {
-                text: "The Prophet (ﷺ) said, 'Take Sahur (pre-dawn meal) as there is a blessing in it.'",
-                source: "Sahih al-Bukhari 1923"
+                text: "The five prayers are like a river of fresh water flowing in front of your house. If one of you were to bathe in it five times a day, would any dirt remain on him? They said, 'No dirt would remain on him.' The Prophet (ﷺ) said, 'That is the likeness of the five prayers by which Allah erases sins.'",
+                source: "Sahih Muslim"
+            },
+            {
+                text: "Whoever Allah wishes good for, He gives him understanding of the religion. And indeed, knowledge comes only through learning, and patience comes only through effort to be patient.",
+                source: "Al-Bukhari"
+            },
+            {
+                text: "Take advantage of five before five: your youth before your old age, your health before your sickness, your wealth before your poverty, your free time before your busyness, and your life before your death.",
+                source: "Al-Hakim"
             }
         ];
         
-        // Function to fetch Quranic verse - now uses local data but still simulates API fetch
+        // Function to fetch Quranic verse
         async function fetchQuranVerse() {
             document.getElementById('quran-content').innerHTML = '<div class="loading">Loading verse...</div>';
             
@@ -637,7 +625,7 @@
             await new Promise(resolve => setTimeout(resolve, 500));
             
             try {
-                // Use local verses instead of API
+                // Use local verses
                 const randomVerse = quranVerses[Math.floor(Math.random() * quranVerses.length)];
                 
                 let html = `
@@ -654,7 +642,7 @@
             }
         }
         
-        // Function to fetch Hadith - now uses local data but still simulates API fetch
+        // Function to fetch Hadith
         async function fetchHadith() {
             document.getElementById('hadith-content').innerHTML = '<div class="loading">Loading hadith...</div>';
             
@@ -682,8 +670,12 @@
         window.addEventListener('load', function() {
             drawClock();
             updateTodayDisplay();
+            updateCountdown();
             fetchQuranVerse();
             fetchHadith();
+            
+            // Update the countdown every second
+            setInterval(updateCountdown, 1000);
             
             // Update the time every minute
             setInterval(updateTodayDisplay, 60000);
@@ -695,4 +687,3 @@
     </script>
 </body>
 </html>
--->
