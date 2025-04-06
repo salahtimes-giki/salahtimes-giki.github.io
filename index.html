@@ -69,11 +69,6 @@
             margin-bottom: 15px;
         }
         
-        .islamic-date {
-            font-weight: bold;
-            color: #4fc3f7;
-        }
-        
         .daily-prayers {
             background: rgba(255, 255, 255, 0.05);
             border-radius: 15px;
@@ -236,9 +231,17 @@
         }
         
         .next-prayer-name {
-            font-size: 1.5rem;
+            font-size: 1.8rem;
             color: #a1b9ff;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
+            display: inline-block;
+        }
+        
+        .next-prayer-in {
+            font-size: 1.2rem;
+            color: #a1b9ff;
+            display: inline-block;
+            margin-left: 10px;
         }
         
         @media (max-width: 768px) {
@@ -261,14 +264,16 @@
             </div>
             <h1>GIKI Prayer Timings</h1>
             <div class="date-display">
-                Today: <span id="current-date"></span> | 
-                Islamic Date: <span class="islamic-date" id="islamic-date"></span>
+                Today: <span id="current-date"></span>
             </div>
         </header>
         
         <div class="next-prayer">
             <h2>Next Prayer</h2>
-            <div class="next-prayer-name" id="next-prayer-name">Loading...</div><h5>    in</h5>
+            <div>
+                <span class="next-prayer-name" id="next-prayer-name">Loading...</span>
+                <span class="next-prayer-in">in</span>
+            </div>
             <div class="countdown" id="countdown">00:00:00</div>
         </div>
         
@@ -344,13 +349,6 @@
             isha: "08:30 PM",
             fridayPrayer: "01:30 PM"
         };
-        
-        // Islamic month names
-        const islamicMonths = [
-            "Muharram", "Safar", "Rabi' al-Awwal", "Rabi' al-Thani",
-            "Jumada al-Awwal", "Jumada al-Thani", "Rajab", "Sha'ban",
-            "Ramadan", "Shawwal", "Dhu al-Qa'dah", "Dhu al-Hijjah"
-        ];
         
         // Function to draw the analog clock
         function drawClock() {
@@ -436,19 +434,6 @@
             return date.toLocaleDateString('en-US', options);
         }
         
-        // Function to get approximate Islamic date
-        // Note: This is a simple approximation and might not be accurate
-        function getIslamicDate() {
-            const today = new Date();
-            // Approximate Islamic date for 2025
-            // This is just an example - in a real application, use a proper Hijri calendar library
-            const islamicDay = ((today.getDate() + 11) % 30) + 1;
-            const islamicMonth = islamicMonths[(today.getMonth() + 2) % 12];
-            const islamicYear = 1446; // Approximate for 2025
-            
-            return `${islamicDay} ${islamicMonth} ${islamicYear}`;
-        }
-        
         // Function to parse time string to Date object
         function parseTimeString(timeStr) {
             const [time, period] = timeStr.split(' ');
@@ -531,11 +516,9 @@
         // Function to update today's display
         function updateTodayDisplay() {
             const currentDateEl = document.getElementById('current-date');
-            const islamicDateEl = document.getElementById('islamic-date');
             
             const today = new Date();
             currentDateEl.textContent = formatDate(today);
-            islamicDateEl.textContent = getIslamicDate();
             
             // Update prayer times
             document.getElementById('today-fajr').textContent = prayerTimes.fajr;
@@ -686,4 +669,4 @@
         });
     </script>
 </body>
-</html>
+</html>  
