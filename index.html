@@ -634,24 +634,29 @@ function parseTimeString(timeStr) {
             }
         }
         
-        // Initialize the page
-        window.addEventListener('load', function() {
-            drawClock();
-            updateTodayDisplay();
-            updateCountdown();
-            fetchQuranVerse();
-            fetchHadith();
-            
-            // Update the countdown every second
-            setInterval(updateCountdown, 1000);
-            
-            // Update the time every minute
-            setInterval(updateTodayDisplay, 60000);
-            
-            // Add event listeners for refresh buttons
-            document.getElementById('refresh-quran').addEventListener('click', fetchQuranVerse);
-            document.getElementById('refresh-hadith').addEventListener('click', fetchHadith);
-        });
+       // Initialize the page
+window.addEventListener('load', function() {
+    try {
+        drawClock();
+        updateTodayDisplay();
+        updateCountdown();
+        fetchQuranVerse();
+        fetchHadith();
+        
+        // Update the countdown every second
+        setInterval(updateCountdown, 1000);
+        
+        // Update the time every minute
+        setInterval(updateTodayDisplay, 60000);
+        
+        // Add event listeners for refresh buttons
+        document.getElementById('refresh-quran').addEventListener('click', fetchQuranVerse);
+        document.getElementById('refresh-hadith').addEventListener('click', fetchHadith);
+    } catch (error) {
+        console.error("Error during initialization:", error);
+    }
+});
+
     </script>
 </body>
 </html>  
