@@ -268,14 +268,14 @@
             </div>
         </header>
         
-        <!--<div class="next-prayer">
+        <div class="next-prayer">
             <h2>Next Prayer</h2>
             <div>
                 <span class="next-prayer-name" id="next-prayer-name">Loading...</span>
                 <span class="next-prayer-in">in</span>
             </div>
             <div class="countdown" id="countdown">00:00:00</div>
-        </div>-->
+        </div>
         
         <div class="daily-prayers">
             <h2>Daily Prayer Timings (Students' Mosque GIKI)</h2>
@@ -442,40 +442,43 @@
             hours = parseInt(hours);
             minutes = parseInt(minutes);
             
-            if (period === 'PM' && hours < 12) {
+            // Convert to 24-hour format
+            if (period === 'PM' && hours !== 12) {
                 hours += 12;
             } else if (period === 'AM' && hours === 12) {
                 hours = 0;
             }
             
             const today = new Date();
-            return new Date(today.getFullYear(), today.getMonth(), today.getDate(), hours, minutes, 0);
+            const prayerTime = new Date(today.getFullYear(), today.getMonth(), today.getDate(), hours, minutes, 0);
+            
+            return prayerTime;
         }
         
         // Function to find next prayer
-       // Function to parse time string to Date object
-function parseTimeString(timeStr) {
-    const [time, period] = timeStr.split(' ');
-    let [hours, minutes] = time.split(':');
-    
-    hours = parseInt(hours);
-    minutes = parseInt(minutes);
-    
-    // Convert to 24-hour format
-    if (period === 'PM' && hours !== 12) {
-        hours += 12;
-    } else if (period === 'AM' && hours === 12) {
-        hours = 0;
-    }
-    
-    const today = new Date();
-    const prayerTime = new Date(today.getFullYear(), today.getMonth(), today.getDate(), hours, minutes, 0);
-    
-    // Debug output
-    console.log(`Parsed time: ${timeStr} -> ${prayerTime.toLocaleTimeString()}`);
-    
-    return prayerTime;
-}
+        function findNextPrayer() {
+            const now = new Date();
+            const prayers = [
+                { name: 'Fajr', time: parseTimeString(prayerTimes.fajr) },
+                { name: 'Dhuhr', time: parseTimeString(prayerTimes.dhuhr) },
+                { name: 'Asr', time: parseTimeString(prayerTimes.asr) },
+                { name: 'Maghrib', time: parseTimeString(prayerTimes.maghrib) },
+                { name: 'Isha', time: parseTimeString(prayerTimes.isha) }
+            ];
+            
+            // Filter future prayers
+            let futurePrayers = prayers.filter(prayer => prayer.time > now);
+            
+            // If no future prayers today, return tomorrow's Fajr
+            if (futurePrayers.length === 0) {
+                const tomorrowFajr = parseTimeString(prayerTimes.fajr);
+                tomorrowFajr.setDate(tomorrowFajr.getDate() + 1);
+                return { name: 'Fajr', time: tomorrowFajr };
+            }
+            
+            // Return the next prayer
+            return futurePrayers[0];
+        }
         
         // Function to update countdown
         function updateCountdown() {
@@ -634,29 +637,28 @@ function parseTimeString(timeStr) {
             }
         }
         
-       // Initialize the page
-window.addEventListener('load', function() {
-    try {
-        drawClock();
-        updateTodayDisplay();
-        updateCountdown();
-        fetchQuranVerse();
-        fetchHadith();
-        
-        // Update the countdown every second
-        setInterval(updateCountdown, 1000);
-        
-        // Update the time every minute
-        setInterval(updateTodayDisplay, 60000);
-        
-        // Add event listeners for refresh buttons
-        document.getElementById('refresh-quran').addEventListener('click', fetchQuranVerse);
-        document.getElementById('refresh-hadith').addEventListener('click', fetchHadith);
-    } catch (error) {
-        console.error("Error during initialization:", error);
-    }
-});
-
+        // Initialize the page
+        window.addEventListener('load', function() {
+            try {
+                drawClock();
+                updateTodayDisplay();
+                updateCountdown();
+                fetchQuranVerse();
+                fetchHadith();
+                
+                // Update the countdown every second
+                setInterval(updateCountdown, 1000);
+                
+                // Update the time every minute
+                setInterval(updateTodayDisplay, 60000);
+                
+                // Add event listeners for refresh buttons
+                document.getElementById('refresh-quran').addEventListener('click', fetchQuranVerse);
+                document.getElementById('refresh-hadith').addEventListener('click', fetchHadith);
+            } catch (error) {
+                console.error("Error during initialization:", error);
+            }
+        });
     </script>
 </body>
-</html>  
+</html>
