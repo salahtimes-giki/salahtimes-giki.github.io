@@ -243,6 +243,15 @@
             display: inline-block;
             margin-left: 10px;
         }
+
+        .friday-special {
+            background: linear-gradient(135deg, rgba(76, 175, 80, 0.2), rgba(139, 195, 74, 0.2));
+            border: 1px solid rgba(76, 175, 80, 0.5);
+        }
+
+        .friday-special h2 {
+            color: #81c784;
+        }
         
         @media (max-width: 768px) {
             .daily-inspiration {
@@ -268,8 +277,8 @@
             </div>
         </header>
         
-        <div class="next-prayer">
-            <h2>Next Prayer</h2>
+        <div class="next-prayer" id="next-prayer-container">
+            <h2 id="next-prayer-title">Next Prayer</h2>
             <div>
                 <span class="next-prayer-name" id="next-prayer-name">Loading...</span>
                 <span class="next-prayer-in">in</span>
@@ -340,14 +349,14 @@
     </div>
 
     <script>
-        // Prayer time data with updated timings
+        // Prayer time data with updated Friday prayer time
         const prayerTimes = {
             fajr: "5:10 AM",
             dhuhr: "1:45 PM",
             asr: "5:15 PM",
             maghrib: "6:35 PM",
             isha: "8:30 PM",
-            fridayPrayer: "1:30 PM"
+            fridayPrayer: "1:30 PM"  // Updated to 1:30 PM as requested
         };
         
         // Function to draw the analog clock
@@ -455,9 +464,35 @@
             return prayerTime;
         }
         
-        // Function to find next prayer
+        // Function to check if it's Friday and time is after Fajr
+        function isFridayAfterFajr() {
+            const now = new Date();
+            const dayOfWeek = now.getDay(); // 0 = Sunday, 5 = Friday
+            
+            if (dayOfWeek !== 5) {
+                return false; // Not Friday
+            }
+            
+            const fajrTime = parseTimeString(prayerTimes.fajr);
+            return now > fajrTime; // Check if current time is after Fajr
+        }
+        
+        // Function to find next prayer with Friday logic
         function findNextPrayer() {
             const now = new Date();
+            const dayOfWeek = now.getDay(); // 0 = Sunday, 5 = Friday
+            
+            // If it's Friday and after Fajr, prioritize Jummah prayer
+            if (isFridayAfterFajr()) {
+                const jummahTime = parseTimeString(prayerTimes.fridayPrayer);
+                
+                // If Jummah hasn't passed yet, return it
+                if (jummahTime > now) {
+                    return { name: "Jumu'ah", time: jummahTime, isFriday: true };
+                }
+            }
+            
+            // Regular prayer logic
             const prayers = [
                 { name: 'Fajr', time: parseTimeString(prayerTimes.fajr) },
                 { name: 'Dhuhr', time: parseTimeString(prayerTimes.dhuhr) },
@@ -473,16 +508,27 @@
             if (futurePrayers.length === 0) {
                 const tomorrowFajr = parseTimeString(prayerTimes.fajr);
                 tomorrowFajr.setDate(tomorrowFajr.getDate() + 1);
-                return { name: 'Fajr', time: tomorrowFajr };
+                return { name: 'Fajr', time: tomorrowFajr, isFriday: false };
             }
             
             // Return the next prayer
-            return futurePrayers[0];
+            return { ...futurePrayers[0], isFriday: false };
         }
         
         // Function to update countdown
         function updateCountdown() {
             const nextPrayer = findNextPrayer();
+            const nextPrayerContainer = document.getElementById('next-prayer-container');
+            const nextPrayerTitle = document.getElementById('next-prayer-title');
+            
+            // Update styling for Friday
+            if (nextPrayer.isFriday) {
+                nextPrayerContainer.classList.add('friday-special');
+                nextPrayerTitle.textContent = '🕌 Next Jumu\'ah Prayer';
+            } else {
+                nextPrayerContainer.classList.remove('friday-special');
+                nextPrayerTitle.textContent = 'Next Prayer';
+            }
             
             document.getElementById('next-prayer-name').textContent = nextPrayer.name;
             
@@ -525,6 +571,11 @@
                 source: "Surah Al-Ankabut (29:45)"
             },
             {
+                arabic: "يَا أَيُّهَا الَّذِينَ آمَنُوا إِذَا نُودِيَ لِلصَّلَاةِ مِن يَوْمِ الْجُمُعَةِ فَاسْعَوْا إِلَىٰ ذِكْرِ اللَّهِ",
+                english: "O you who believe! When the call is made for prayer on Friday, then hasten to the remembrance of Allah.",
+                source: "Surah Al-Jumu'ah (62:9)"
+            },
+            {
                 arabic: "وَاصْبِرْ وَمَا صَبْرُكَ إِلَّا بِاللَّهِ",
                 english: "And be patient, and your patience is not but through Allah.",
                 source: "Surah An-Nahl (16:127)"
@@ -563,6 +614,10 @@
                 source: "Sahih Muslim"
             },
             {
+                text: "Friday prayer is obligatory upon every Muslim, except four: a slave, a woman, a child, and one who is sick.",
+                source: "Abu Dawud"
+            },
+            {
                 text: "The key to Paradise is prayer, and the key to prayer is cleanliness.",
                 source: "Ahmad and Tirmidhi"
             },
@@ -579,8 +634,8 @@
                 source: "Sahih Muslim"
             },
             {
-                text: "Whoever Allah wishes good for, He gives him understanding of the religion. And indeed, knowledge comes only through learning, and patience comes only through effort to be patient.",
-                source: "Al-Bukhari"
+                text: "Whoever comes to Friday prayer, having performed ablution properly, and listens attentively without talking, will have all his sins between that Friday and the next forgiven, and three more days besides.",
+                source: "Sahih Muslim"
             },
             {
                 text: "Take advantage of five before five: your youth before your old age, your health before your sickness, your wealth before your poverty, your free time before your busyness, and your life before your death.",
