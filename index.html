@@ -3,717 +3,923 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/x-icon" href="favicon.ico">
-    <title>GIKI Prayer Times</title>
-    <!-- Font imports -->
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu&display=swap" rel="stylesheet">
+    <title>GIKI Prayer Times – Ramadan 2026</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Amiri:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     <style>
-        @font-face {
-            font-family: 'KFGQPC Uthmanic Script';
-            src: url('https://cdn.islamic.network/quran/fonts/quran/hafs/v1/woff2/QCF_P001.woff2') format('woff2');
-            font-weight: normal;
-            font-style: normal;
+        :root {
+            --bg-deep: #050d0d;
+            --bg-card: #0a1a18;
+            --bg-card2: #0d2020;
+            --teal-vivid: #00e5c3;
+            --teal-mid: #00b89f;
+            --teal-dark: #006e60;
+            --teal-glow: rgba(0, 229, 195, 0.15);
+            --teal-glow2: rgba(0, 229, 195, 0.06);
+            --gold: #c9a84c;
+            --gold-light: #f0d080;
+            --text-primary: #e8f5f3;
+            --text-secondary: #7ec8be;
+            --text-muted: #3d7a72;
+            --border: rgba(0, 229, 195, 0.15);
+            --border-strong: rgba(0, 229, 195, 0.35);
         }
-        
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: #fff;
-            margin: 0;
-            padding: 0;
-            background: linear-gradient(135deg, #0a1f44 0%, #1e3a8a 100%);
+            font-family: 'Crimson Pro', Georgia, serif;
+            background: var(--bg-deep);
+            color: var(--text-primary);
             min-height: 100vh;
+            overflow-x: hidden;
         }
-        
-        .arabic-text {
-            font-family: 'KFGQPC Uthmanic Script', serif;
-            direction: rtl;
-            line-height: 2;
-            font-size: 1.6rem;
-            margin-bottom: 15px;
-            word-spacing: 0.2em;
-            letter-spacing: 0.03em;
+
+        /* Ambient background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -20%;
+            left: -10%;
+            width: 60%;
+            height: 60%;
+            background: radial-gradient(ellipse, rgba(0, 120, 100, 0.12) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
         }
-        
+        body::after {
+            content: '';
+            position: fixed;
+            bottom: -10%;
+            right: -5%;
+            width: 50%;
+            height: 50%;
+            background: radial-gradient(ellipse, rgba(0, 80, 70, 0.1) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
         .container {
-            max-width: 1000px;
+            max-width: 1060px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 28px 20px 40px;
+            position: relative;
+            z-index: 1;
         }
-        
+
+        /* ── HEADER ── */
         header {
             text-align: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 32px;
+            padding-bottom: 28px;
+            border-bottom: 1px solid var(--border);
             position: relative;
         }
-        
+
         .clock-container {
             position: absolute;
             top: 0;
             left: 0;
-            width: 80px;
-            height: 80px;
         }
-        
+
+        .ramadan-badge {
+            display: inline-block;
+            font-family: 'Cinzel', serif;
+            font-size: 0.7rem;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: var(--gold);
+            border: 1px solid rgba(201, 168, 76, 0.4);
+            padding: 4px 16px;
+            border-radius: 20px;
+            margin-bottom: 10px;
+            background: rgba(201, 168, 76, 0.06);
+        }
+
         h1 {
-            color: #fff;
-            margin-bottom: 10px;
-            font-size: 2.2rem;
+            font-family: 'Cinzel', serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: 0.05em;
+            margin-bottom: 6px;
         }
-        
+
+        h1 span {
+            color: var(--teal-vivid);
+        }
+
         .date-display {
-            font-size: 1.2rem;
-            color: #a1b9ff;
-            margin-bottom: 15px;
+            font-size: 1rem;
+            color: var(--text-secondary);
+            font-style: italic;
         }
-        
-        .daily-prayers {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 15px;
-            padding: 30px;
-            margin-bottom: 30px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .daily-prayers h2 {
-            margin-top: 0;
-            color: #4fc3f7;
-            text-align: center;
-            margin-bottom: 25px;
-        }
-        
-        .prayer-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 20px;
-        }
-        
-        .prayer-card {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            padding: 15px;
-            text-align: center;
-            transition: transform 0.2s;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .prayer-card:hover {
-            transform: translateY(-5px);
-        }
-        
-        .prayer-name {
-            font-size: 1.3rem;
-            color: #a1b9ff;
-            margin-bottom: 10px;
-        }
-        
-        .prayer-time {
-            font-size: 1.5rem;
-            font-weight: bold;
-        }
-        
-        .daily-inspiration {
+
+        /* ── RAMADAN TODAY BANNER ── */
+        .ramadan-today {
+            background: linear-gradient(135deg, #0a1f1c, #0d2a25);
+            border: 1px solid rgba(201, 168, 76, 0.3);
+            border-radius: 14px;
+            padding: 20px 28px;
+            margin-bottom: 24px;
             display: flex;
             gap: 20px;
-            margin-bottom: 30px;
+            align-items: center;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            box-shadow: 0 0 30px rgba(201, 168, 76, 0.06);
         }
-        
+
+        .ramadan-block {
+            text-align: center;
+        }
+
+        .ramadan-label {
+            font-size: 0.75rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--gold);
+            font-family: 'Cinzel', serif;
+            margin-bottom: 4px;
+        }
+
+        .ramadan-value {
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            line-height: 1;
+        }
+
+        .ramadan-value.gold {
+            color: var(--gold-light);
+        }
+
+        .ramadan-divider {
+            width: 1px;
+            height: 50px;
+            background: rgba(201, 168, 76, 0.2);
+        }
+
+        /* ── NEXT PRAYER ── */
+        .next-prayer {
+            background: var(--bg-card);
+            border: 1px solid var(--border-strong);
+            border-radius: 14px;
+            padding: 22px 28px;
+            margin-bottom: 24px;
+            text-align: center;
+            box-shadow: 0 0 40px var(--teal-glow);
+        }
+
+        .next-prayer h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 0.8rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--teal-mid);
+            margin-bottom: 8px;
+            font-weight: 400;
+        }
+
+        .next-prayer-name {
+            font-size: 1.9rem;
+            font-family: 'Cinzel', serif;
+            color: var(--teal-vivid);
+        }
+
+        .next-prayer-in {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            margin: 0 8px;
+        }
+
+        .countdown {
+            font-size: 2.6rem;
+            font-weight: 300;
+            color: #fff;
+            letter-spacing: 0.05em;
+            margin-top: 4px;
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* ── PRAYER GRID ── */
+        .section-title {
+            font-family: 'Cinzel', serif;
+            font-size: 0.75rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--teal-mid);
+            margin-bottom: 16px;
+            font-weight: 400;
+        }
+
+        .daily-prayers {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .prayer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 14px;
+        }
+
+        .prayer-card {
+            background: var(--bg-card2);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px 12px;
+            text-align: center;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .prayer-card:hover {
+            border-color: var(--teal-mid);
+            box-shadow: 0 0 18px var(--teal-glow);
+        }
+
+        .prayer-card.active {
+            border-color: var(--teal-vivid);
+            box-shadow: 0 0 20px var(--teal-glow);
+        }
+
+        .prayer-name {
+            font-family: 'Cinzel', serif;
+            font-size: 0.75rem;
+            letter-spacing: 0.15em;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .prayer-time {
+            font-size: 1.4rem;
+            font-weight: 300;
+            color: var(--text-primary);
+        }
+
+        /* ── RAMADAN TABLE ── */
+        .ramadan-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 24px;
+            margin-bottom: 24px;
+            overflow: hidden;
+        }
+
+        .table-scroll {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+        }
+
+        thead th {
+            font-family: 'Cinzel', serif;
+            font-size: 0.7rem;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--teal-mid);
+            padding: 10px 14px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-strong);
+            font-weight: 400;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid rgba(0,229,195,0.05);
+            transition: background 0.15s;
+        }
+
+        tbody tr:hover {
+            background: var(--teal-glow2);
+        }
+
+        tbody tr.today-row {
+            background: rgba(0, 229, 195, 0.08);
+            border-left: 2px solid var(--teal-vivid);
+        }
+
+        tbody td {
+            padding: 9px 14px;
+            color: var(--text-primary);
+        }
+
+        tbody td.sehr { color: var(--gold-light); }
+        tbody td.iftar { color: #7af0d0; }
+        tbody td.roza-num {
+            font-family: 'Cinzel', serif;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        .today-tag {
+            display: inline-block;
+            font-size: 0.6rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            background: var(--teal-vivid);
+            color: #000;
+            border-radius: 4px;
+            padding: 1px 6px;
+            margin-left: 6px;
+            font-family: 'Cinzel', serif;
+            vertical-align: middle;
+        }
+
+        /* ── INSPIRATION ── */
+        .daily-inspiration {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        @media (max-width: 680px) {
+            .daily-inspiration { grid-template-columns: 1fr; }
+            .ramadan-divider { display: none; }
+        }
+
         .inspiration-box {
-            flex: 1;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 24px;
             position: relative;
             overflow: hidden;
         }
-        
-        .inspiration-box::before {
+
+        .inspiration-box::after {
             content: '';
             position: absolute;
-            top: 0;
-            right: 0;
+            bottom: -20px;
+            right: -20px;
             width: 100px;
             height: 100px;
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 50%;
-            transform: translate(30%, -30%);
+            background: radial-gradient(circle, var(--teal-glow) 0%, transparent 70%);
+            pointer-events: none;
         }
-        
+
         .inspiration-box h3 {
-            margin-top: 0;
-            color: #4fc3f7;
-            font-size: 1.5rem;
-            margin-bottom: 15px;
+            font-family: 'Cinzel', serif;
+            font-size: 0.7rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--teal-mid);
+            margin-bottom: 18px;
             display: flex;
             align-items: center;
+            gap: 8px;
+            font-weight: 400;
         }
-        
-        .inspiration-box h3 span {
-            font-size: 1.3rem;
-            margin-right: 10px;
-        }
-        
-        .inspiration-text {
-            font-size: 1.1rem;
-            line-height: 1.8;
-            margin-bottom: 15px;
-            position: relative;
-            z-index: 1;
-        }
-        
-        .inspiration-source {
-            font-style: italic;
-            color: #a1b9ff;
-            font-size: 0.9rem;
-            text-align: right;
-        }
-        
+
         .refresh-button {
-            background: rgba(255, 255, 255, 0.1);
-            border: none;
-            color: #a1b9ff;
+            background: rgba(0, 229, 195, 0.08);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
             border-radius: 50%;
-            width: 30px;
-            height: 30px;
+            width: 26px;
+            height: 26px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             margin-left: auto;
-            transition: all 0.2s;
+            font-size: 0.85rem;
+            transition: all 0.25s;
+            flex-shrink: 0;
         }
-        
+
         .refresh-button:hover {
-            background: rgba(255, 255, 255, 0.2);
+            background: var(--teal-glow);
+            border-color: var(--teal-mid);
             transform: rotate(180deg);
         }
-        
-        footer {
-            text-align: center;
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            color: #a1b9ff;
-            font-size: 0.9rem;
+
+        .arabic-text {
+            font-family: 'Amiri', 'Traditional Arabic', serif;
+            direction: rtl;
+            line-height: 2.2;
+            font-size: 1.6rem;
+            color: var(--gold-light);
+            margin-bottom: 14px;
+            text-align: right;
         }
-        
-        .loading {
-            text-align: center;
-            color: #a1b9ff;
+
+        .inspiration-text {
+            font-size: 1.05rem;
+            line-height: 1.8;
+            color: var(--text-primary);
             font-style: italic;
-        }
-        
-        .next-prayer {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 30px;
-            text-align: center;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .next-prayer h2 {
-            margin-top: 0;
-            color: #4fc3f7;
             margin-bottom: 10px;
         }
-        
-        .countdown {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #fff;
-        }
-        
-        .next-prayer-name {
-            font-size: 1.8rem;
-            color: #a1b9ff;
-            margin-bottom: 5px;
-            display: inline-block;
-        }
-        
-        .next-prayer-in {
-            font-size: 1.2rem;
-            color: #a1b9ff;
-            display: inline-block;
-            margin-left: 10px;
+
+        .inspiration-source {
+            font-size: 0.8rem;
+            color: var(--teal-mid);
+            font-family: 'Cinzel', serif;
+            letter-spacing: 0.08em;
         }
 
-        .friday-special {
-            background: linear-gradient(135deg, rgba(76, 175, 80, 0.2), rgba(139, 195, 74, 0.2));
-            border: 1px solid rgba(76, 175, 80, 0.5);
+        .loading {
+            color: var(--text-muted);
+            font-style: italic;
         }
 
-        .friday-special h2 {
-            color: #81c784;
+        /* ── FOOTER ── */
+        footer {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
         }
-        
-        @media (max-width: 768px) {
-            .daily-inspiration {
-                flex-direction: column;
-            }
-            
-            .clock-container {
-                position: relative;
-                margin: 0 auto 20px;
-            }
-        }
+
+        /* ── CLOCK ── */
+        canvas { display: block; }
     </style>
+
 </head>
 <body>
-    <div class="container">
-        <header>
-            <div class="clock-container">
-                <canvas id="clock" width="80" height="80"></canvas>
-            </div>
-            <h1>GIKI Prayer Timings</h1>
-            <div class="date-display">
-                Today: <span id="current-date"></span>
-            </div>
-        </header>
-        
-        <div class="next-prayer" id="next-prayer-container">
-            <h2 id="next-prayer-title">Next Prayer</h2>
-            <div>
-                <span class="next-prayer-name" id="next-prayer-name">Loading...</span>
-                <span class="next-prayer-in">in</span>
-            </div>
-            <div class="countdown" id="countdown">00:00:00</div>
+<div class="container">
+
+    <!-- HEADER -->
+    <header>
+        <div class="clock-container">
+            <canvas id="clock" width="80" height="80"></canvas>
         </div>
-        
-        <div class="daily-prayers">
-            <h2>Daily Prayer Timings (Students' Mosque GIKI)</h2>
-            <div class="prayer-grid">
-                <div class="prayer-card">
-                    <div class="prayer-name">Fajr</div>
-                    <div class="prayer-time" id="today-fajr">6:15 AM</div>
-                </div>
-                
-                <div class="prayer-card">
-                    <div class="prayer-name">Dhuhr</div>
-                    <div class="prayer-time" id="today-dhuhr">1:45 PM</div>
-                </div>
-                
-                <div class="prayer-card">
-                    <div class="prayer-name">Asr</div>
-                    <div class="prayer-time" id="today-asr">4:45 PM</div>
-                </div>
-                
-                <div class="prayer-card">
-                    <div class="prayer-name">Maghrib</div>
-                    <div class="prayer-time" id="today-maghrib">5:59 PM</div>
-                </div>
-                
-                <div class="prayer-card">
-                    <div class="prayer-name">Isha</div>
-                    <div class="prayer-time" id="today-isha">7:45 PM</div>
-                </div>
-                
-                <div class="prayer-card">
-                    <div class="prayer-name">Jumu'ah</div>
-                    <div class="prayer-time" id="today-friday-prayer">1:30 PM</div>
-                </div>
-            </div>
+        <div class="ramadan-badge">Ramadan 1447 · Mubarak</div>
+        <h1>GIKI <span>Prayer</span> Timings</h1>
+        <div class="date-display">Today: <span id="current-date"></span></div>
+    </header>
+
+    <!-- RAMADAN TODAY -->
+    <div class="ramadan-today" id="ramadan-today-section">
+        <div class="ramadan-block">
+            <div class="ramadan-label">Roza</div>
+            <div class="ramadan-value gold" id="today-roza-num">—</div>
         </div>
-        
-        <div class="daily-inspiration">
-            <div class="inspiration-box">
-                <h3>
-                    <span>🕋</span> Quranic Verse
-                    <button class="refresh-button" id="refresh-quran" title="Load another verse">↻</button>
-                </h3>
-                <div id="quran-content">
-                    <div class="loading">Loading verse...</div>
-                </div>
-            </div>
-            
-            <div class="inspiration-box">
-                <h3>
-                    <span>📜</span> Hadith of the Day
-                    <button class="refresh-button" id="refresh-hadith" title="Load another hadith">↻</button>
-                </h3>
-                <div id="hadith-content">
-                    <div class="loading">Loading hadith...</div>
-                </div>
-            </div>
+        <div class="ramadan-divider"></div>
+        <div class="ramadan-block">
+            <div class="ramadan-label">Sehr</div>
+            <div class="ramadan-value" id="today-sehr">—</div>
         </div>
-        
-        <footer>
-            <p>GIKI Prayer Timings Calendar. Updated for 2025.</p>
-        </footer>
+        <div class="ramadan-divider"></div>
+        <div class="ramadan-block">
+            <div class="ramadan-label">Iftar</div>
+            <div class="ramadan-value" id="today-iftar">—</div>
+        </div>
+        <div class="ramadan-divider"></div>
+        <div class="ramadan-block" id="sehr-iftar-countdown-block">
+            <div class="ramadan-label" id="sehr-iftar-label">—</div>
+            <div class="ramadan-value" id="sehr-iftar-countdown">—</div>
+        </div>
     </div>
 
-    <script>
-        // Prayer time data with updated Friday prayer time
-        const prayerTimes = {
-            fajr: "6:15 AM",
-            dhuhr: "1:45 PM",
-            asr: "4:45 PM",
-            maghrib: "5:59 PM",
-            isha: "7:45 PM",
-            fridayPrayer: "1:30 PM"  // Updated to 1:30 PM as requested
-        };
-        
-        // Function to draw the analog clock
-        function drawClock() {
-            const canvas = document.getElementById('clock');
-            const ctx = canvas.getContext('2d');
-            const radius = canvas.height / 2;
-            ctx.translate(radius, radius);
-            const radiusScale = 0.9; // Scale to make room for the border
-            
-            // Update the time
-            function updateClock() {
-                drawFace(ctx, radius * radiusScale);
-                drawNumbers(ctx, radius * radiusScale);
-                
-                const now = new Date();
-                const hour = now.getHours() % 12;
-                const minute = now.getMinutes();
-                const second = now.getSeconds();
-                
-                drawHand(ctx, (hour*30) + (minute*0.5), radius * 0.5, radius * 0.07, '#fff');
-                drawHand(ctx, minute * 6, radius * 0.8, radius * 0.05, '#4fc3f7');
-                drawHand(ctx, second * 6, radius * 0.85, radius * 0.02, '#ff6b6b');
-                
-                // Draw center circle
-                ctx.beginPath();
-                ctx.arc(0, 0, radius * 0.1, 0, 2 * Math.PI);
-                ctx.fillStyle = '#fff';
-                ctx.fill();
-            }
-            
-            function drawFace(ctx, radius) {
-                // Clear canvas
-                ctx.clearRect(-canvas.width/2, -canvas.height/2, canvas.width, canvas.height);
-                
-                // Draw clock face
-                ctx.beginPath();
-                ctx.arc(0, 0, radius, 0, 2 * Math.PI);
-                ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
-                ctx.fill();
-                ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
-                ctx.lineWidth = radius * 0.05;
-                ctx.stroke();
-            }
-            
-            function drawNumbers(ctx, radius) {
-                ctx.font = radius * 0.25 + "px Arial";
-                ctx.textBaseline = "middle";
-                ctx.textAlign = "center";
-                ctx.fillStyle = '#fff';
-                
-                // Draw hour dots instead of numbers to keep it clean
-                for (let num = 1; num <= 12; num++) {
-                    const ang = num * Math.PI / 6;
-                    ctx.beginPath();
-                    const x = Math.sin(ang) * (radius * 0.85);
-                    const y = -Math.cos(ang) * (radius * 0.85);
-                    ctx.arc(x, y, radius * 0.03, 0, 2 * Math.PI);
-                    ctx.fillStyle = '#fff';
-                    ctx.fill();
-                }
-            }
-            
-            function drawHand(ctx, pos, length, width, color) {
-                ctx.beginPath();
-                ctx.lineWidth = width;
-                ctx.lineCap = "round";
-                ctx.strokeStyle = color;
-                
-                const angle = (pos - 90) * Math.PI / 180;
-                ctx.moveTo(0, 0);
-                ctx.lineTo(length * Math.cos(angle), length * Math.sin(angle));
-                ctx.stroke();
-            }
-            
-            // Call updateClock every second
-            setInterval(updateClock, 1000);
-            updateClock(); // Initial draw
+    <!-- NEXT PRAYER -->
+    <div class="next-prayer" id="next-prayer-container">
+        <h2 id="next-prayer-title">Next Prayer</h2>
+        <div>
+            <span class="next-prayer-name" id="next-prayer-name">—</span>
+            <span class="next-prayer-in">in</span>
+        </div>
+        <div class="countdown" id="countdown">00:00:00</div>
+    </div>
+
+    <!-- DAILY PRAYER TIMES -->
+    <div class="daily-prayers">
+        <div class="section-title">Daily Prayer Timings · Students' Mosque GIKI</div>
+        <div class="prayer-grid">
+            <div class="prayer-card" id="card-fajr">
+                <div class="prayer-name">Fajr</div>
+                <div class="prayer-time" id="today-fajr">6:15 AM</div>
+            </div>
+            <div class="prayer-card" id="card-dhuhr">
+                <div class="prayer-name">Dhuhr</div>
+                <div class="prayer-time" id="today-dhuhr">1:45 PM</div>
+            </div>
+            <div class="prayer-card" id="card-asr">
+                <div class="prayer-name">Asr</div>
+                <div class="prayer-time" id="today-asr">4:45 PM</div>
+            </div>
+            <div class="prayer-card" id="card-maghrib">
+                <div class="prayer-name">Maghrib</div>
+                <div class="prayer-time" id="today-maghrib">5:49 PM</div>
+            </div>
+            <div class="prayer-card" id="card-isha">
+                <div class="prayer-name">Isha</div>
+                <div class="prayer-time" id="today-isha">7:45 PM</div>
+            </div>
+            <div class="prayer-card" id="card-friday">
+                <div class="prayer-name">Jumu'ah</div>
+                <div class="prayer-time" id="today-friday-prayer">1:30 PM</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- RAMADAN SCHEDULE TABLE -->
+    <div class="ramadan-section">
+        <div class="section-title">Ramadan 1447 – Sehr &amp; Iftar Schedule · GIKI</div>
+        <div class="table-scroll">
+        <table>
+            <thead>
+                <tr>
+                    <th>Roza</th>
+                    <th>Date</th>
+                    <th>Sehr</th>
+                    <th>Iftar</th>
+                </tr>
+            </thead>
+            <tbody id="ramadan-table-body"></tbody>
+        </table>
+        </div>
+    </div>
+
+    <!-- INSPIRATION -->
+    <div class="daily-inspiration">
+        <div class="inspiration-box">
+            <h3>
+                <span>🕋</span> Quranic Verse
+                <button class="refresh-button" id="refresh-quran" title="Another verse">↻</button>
+            </h3>
+            <div id="quran-content"><div class="loading">Loading verse…</div></div>
+        </div>
+        <div class="inspiration-box">
+            <h3>
+                <span>📜</span> Hadith of the Day
+                <button class="refresh-button" id="refresh-hadith" title="Another hadith">↻</button>
+            </h3>
+            <div id="hadith-content"><div class="loading">Loading hadith…</div></div>
+        </div>
+    </div>
+
+    <footer>
+        <p>GIKI Prayer Timings · Ramadan 2026 · Updated for 1447 AH</p>
+    </footer>
+</div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────
+const prayerTimes = {
+    fajr: "6:15 AM",
+    dhuhr: "1:45 PM",
+    asr: "4:45 PM",
+    maghrib: "5:49 PM",
+    isha: "7:45 PM",
+    fridayPrayer: "1:30 PM"
+};
+
+const ramadanData = [
+    { roza:1,  date:"2026-02-19", sehr:"05:27", iftar:"17:59" },
+    { roza:2,  date:"2026-02-20", sehr:"05:26", iftar:"18:00" },
+    { roza:3,  date:"2026-02-21", sehr:"05:25", iftar:"18:01" },
+    { roza:4,  date:"2026-02-22", sehr:"05:24", iftar:"18:02" },
+    { roza:5,  date:"2026-02-23", sehr:"05:23", iftar:"18:03" },
+    { roza:6,  date:"2026-02-24", sehr:"05:22", iftar:"18:03" },
+    { roza:7,  date:"2026-02-25", sehr:"05:21", iftar:"18:04" },
+    { roza:8,  date:"2026-02-26", sehr:"05:20", iftar:"18:05" },
+    { roza:9,  date:"2026-02-27", sehr:"05:19", iftar:"18:06" },
+    { roza:10, date:"2026-02-28", sehr:"05:17", iftar:"18:07" },
+    { roza:11, date:"2026-03-01", sehr:"05:16", iftar:"18:08" },
+    { roza:12, date:"2026-03-02", sehr:"05:13", iftar:"18:10" },
+    { roza:13, date:"2026-03-03", sehr:"05:12", iftar:"18:10" },
+    { roza:14, date:"2026-03-04", sehr:"05:11", iftar:"18:11" },
+    { roza:15, date:"2026-03-05", sehr:"05:10", iftar:"18:12" },
+    { roza:16, date:"2026-03-06", sehr:"05:08", iftar:"18:13" },
+    { roza:17, date:"2026-03-07", sehr:"05:07", iftar:"18:14" },
+    { roza:18, date:"2026-03-08", sehr:"05:06", iftar:"18:15" },
+    { roza:19, date:"2026-03-09", sehr:"05:04", iftar:"18:15" },
+    { roza:20, date:"2026-03-10", sehr:"05:03", iftar:"18:16" },
+    { roza:21, date:"2026-03-11", sehr:"05:02", iftar:"18:17" },
+    { roza:22, date:"2026-03-12", sehr:"05:00", iftar:"18:18" },
+    { roza:23, date:"2026-03-13", sehr:"04:59", iftar:"18:19" },
+    { roza:24, date:"2026-03-14", sehr:"04:58", iftar:"18:19" },
+    { roza:25, date:"2026-03-15", sehr:"04:56", iftar:"18:20" },
+    { roza:26, date:"2026-03-16", sehr:"04:55", iftar:"18:21" },
+    { roza:27, date:"2026-03-17", sehr:"04:53", iftar:"18:22" },
+    { roza:28, date:"2026-03-18", sehr:"04:52", iftar:"18:23" },
+    { roza:29, date:"2026-03-19", sehr:"04:51", iftar:"18:23" }
+];
+
+// Fasting, patience, prayer, dhikr – authentic verses
+const quranVerses = [
+    {
+        arabic: "يَا أَيُّهَا الَّذِينَ آمَنُوا كُتِبَ عَلَيْكُمُ الصِّيَامُ كَمَا كُتِبَ عَلَى الَّذِينَ مِن قَبْلِكُمْ لَعَلَّكُمْ تَتَّقُونَ",
+        english: "O you who have believed, decreed upon you is fasting as it was decreed upon those before you that you may become righteous.",
+        source: "Surah Al-Baqarah (2:183)"
+    },
+    {
+        arabic: "شَهْرُ رَمَضَانَ الَّذِي أُنزِلَ فِيهِ الْقُرْآنُ هُدًى لِّلنَّاسِ وَبَيِّنَاتٍ مِّنَ الْهُدَىٰ وَالْفُرْقَانِ",
+        english: "The month of Ramadan in which was revealed the Quran, a guidance for the people and clear proofs of guidance and criterion.",
+        source: "Surah Al-Baqarah (2:185)"
+    },
+    {
+        arabic: "وَإِذَا سَأَلَكَ عِبَادِي عَنِّي فَإِنِّي قَرِيبٌ ۖ أُجِيبُ دَعْوَةَ الدَّاعِ إِذَا دَعَانِ",
+        english: "And when My servants ask you concerning Me, indeed I am near. I respond to the invocation of the supplicant when he calls upon Me.",
+        source: "Surah Al-Baqarah (2:186)"
+    },
+    {
+        arabic: "وَاسْتَعِينُوا بِالصَّبْرِ وَالصَّلَاةِ ۚ وَإِنَّهَا لَكَبِيرَةٌ إِلَّا عَلَى الْخَاشِعِينَ",
+        english: "And seek help through patience and prayer, and indeed it is difficult except for the humbly submissive.",
+        source: "Surah Al-Baqarah (2:45)"
+    },
+    {
+        arabic: "الَّذِينَ آمَنُوا وَتَطْمَئِنُّ قُلُوبُهُم بِذِكْرِ اللَّهِ ۗ أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ",
+        english: "Those who have believed and whose hearts are assured by the remembrance of Allah. Unquestionably, by the remembrance of Allah hearts are assured.",
+        source: "Surah Ar-Ra'd (13:28)"
+    },
+    {
+        arabic: "فَاذْكُرُونِي أَذْكُرْكُمْ وَاشْكُرُوا لِي وَلَا تَكْفُرُونِ",
+        english: "So remember Me; I will remember you. And be grateful to Me and do not deny Me.",
+        source: "Surah Al-Baqarah (2:152)"
+    },
+    {
+        arabic: "وَأَقِمِ الصَّلَاةَ ۖ إِنَّ الصَّلَاةَ تَنْهَىٰ عَنِ الْفَحْشَاءِ وَالْمُنكَرِ",
+        english: "Establish prayer. Indeed, prayer prohibits immorality and wrongdoing.",
+        source: "Surah Al-Ankabut (29:45)"
+    },
+    {
+        arabic: "إِنَّ اللَّهَ وَمَلَائِكَتَهُ يُصَلُّونَ عَلَى النَّبِيِّ ۚ يَا أَيُّهَا الَّذِينَ آمَنُوا صَلُّوا عَلَيْهِ وَسَلِّمُوا تَسْلِيمًا",
+        english: "Indeed, Allah confers blessing upon the Prophet, and His angels ask Him to do so. O you who have believed, ask Him to confer blessing upon him and ask Him for peace.",
+        source: "Surah Al-Ahzab (33:56)"
+    },
+    {
+        arabic: "وَاصْبِرْ وَمَا صَبْرُكَ إِلَّا بِاللَّهِ",
+        english: "And be patient, and your patience is not but through Allah.",
+        source: "Surah An-Nahl (16:127)"
+    }
+];
+
+// Authentic ahadith – fasting, prayer, dhikr – Sahih Bukhari primary, Sahih Muslim if needed
+const hadiths = [
+    {
+        text: "Every deed of the son of Adam is multiplied from ten to seven hundred times. Allah, Exalted be He, said: 'Except for fasting, for it is for Me and I shall reward it Myself; he gives up his desire and his food for My sake.'",
+        source: "Sahih Muslim"
+    },
+    {
+        text: "The Prophet ﷺ said: 'Whoever fasts Ramadan out of faith and hoping for reward, his previous sins will be forgiven.'",
+        source: "Sahih al-Bukhari"
+    },
+    {
+        text: "The Prophet ﷺ said: 'There is a gate in Paradise called Al-Rayyan, through which those who fasted will enter on the Day of Resurrection, and none except them will enter through it.'",
+        source: "Sahih al-Bukhari"
+    },
+    {
+        text: "The Prophet ﷺ said: 'The fasting person has two moments of joy: when he breaks his fast he is happy, and when he meets his Lord he will be happy because of his fasting.'",
+        source: "Sahih al-Bukhari"
+    },
+    {
+        text: "The Prophet ﷺ was asked: 'Which deed is most beloved to Allah?' He said: 'Prayer at its proper time.' He was asked: 'Then what?' He said: 'Kindness to parents.' He was asked: 'Then what?' He said: 'Jihad in the cause of Allah.'",
+        source: "Sahih al-Bukhari"
+    },
+    {
+        text: "The Prophet ﷺ said: 'Whoever says SubhanAllah wa bihamdihi one hundred times a day, his sins will be wiped away even if they are like the foam of the sea.'",
+        source: "Sahih al-Bukhari"
+    },
+    {
+        text: "The Prophet ﷺ said: 'The five daily prayers and the Friday prayer to the next Friday prayer are expiation for what is between them, as long as major sins are avoided.'",
+        source: "Sahih Muslim"
+    },
+    {
+        text: "The Prophet ﷺ said: 'When Ramadan begins, the gates of Paradise are opened and the gates of Hell are closed, and the devils are chained.'",
+        source: "Sahih al-Bukhari"
+    },
+    {
+        text: "The Prophet ﷺ said: 'Take up good deeds only as much as you are able, for the best deeds are those done regularly even if they are few.'",
+        source: "Sahih al-Bukhari"
+    },
+    {
+        text: "The Prophet ﷺ said: 'Two words are light on the tongue, heavy on the scale, beloved to the Most Merciful: SubhanAllahi wa bihamdih, SubhanAllahil Azeem.'",
+        source: "Sahih al-Bukhari"
+    }
+];
+
+// ── HELPERS ───────────────────────────────────────────────
+function todayStr() {
+    const d = new Date();
+    const y = d.getFullYear();
+    const m = String(d.getMonth()+1).padStart(2,'0');
+    const day = String(d.getDate()).padStart(2,'0');
+    return `${y}-${m}-${day}`;
+}
+
+function formatDate(date) {
+    return date.toLocaleDateString('en-US', { day:'numeric', month:'long', year:'numeric' });
+}
+
+function parseTimeString(timeStr) {
+    const [time, period] = timeStr.split(' ');
+    let [hours, minutes] = time.split(':').map(Number);
+    if (period === 'PM' && hours !== 12) hours += 12;
+    else if (period === 'AM' && hours === 12) hours = 0;
+    const today = new Date();
+    return new Date(today.getFullYear(), today.getMonth(), today.getDate(), hours, minutes, 0);
+}
+
+function parseHHMM(str) {
+    const [h, m] = str.split(':').map(Number);
+    const today = new Date();
+    return new Date(today.getFullYear(), today.getMonth(), today.getDate(), h, m, 0);
+}
+
+function formatCountdown(ms) {
+    if (ms <= 0) return "00:00:00";
+    const h = Math.floor(ms / 3600000);
+    const min = Math.floor((ms % 3600000) / 60000);
+    const sec = Math.floor((ms % 60000) / 1000);
+    return `${String(h).padStart(2,'0')}:${String(min).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+}
+
+// ── TABLE ─────────────────────────────────────────────────
+function buildTable() {
+    const today = todayStr();
+    const tbody = document.getElementById('ramadan-table-body');
+    let html = '';
+    ramadanData.forEach(r => {
+        const d = new Date(r.date);
+        const dateLabel = d.toLocaleDateString('en-PK', { day:'numeric', month:'short', year:'numeric' });
+        const isToday = r.date === today;
+        html += `<tr class="${isToday ? 'today-row' : ''}">
+            <td class="roza-num">${r.roza}${isToday ? '<span class="today-tag">Today</span>' : ''}</td>
+            <td>${dateLabel}</td>
+            <td class="sehr">${r.sehr}</td>
+            <td class="iftar">${r.iftar}</td>
+        </tr>`;
+    });
+    tbody.innerHTML = html;
+    // Scroll to today row
+    const todayRow = tbody.querySelector('.today-row');
+    if (todayRow) setTimeout(() => todayRow.scrollIntoView({ block:'nearest', behavior:'smooth' }), 600);
+}
+
+// ── RAMADAN TODAY BANNER ───────────────────────────────────
+function updateRamadanBanner() {
+    const today = todayStr();
+    const entry = ramadanData.find(r => r.date === today);
+    if (!entry) {
+        document.getElementById('ramadan-today-section').style.display = 'none';
+        return;
+    }
+    document.getElementById('today-roza-num').textContent = entry.roza;
+    document.getElementById('today-sehr').textContent = entry.sehr;
+    document.getElementById('today-iftar').textContent = entry.iftar;
+
+    // Countdown to sehr or iftar
+    const now = new Date();
+    const sehrTime = parseHHMM(entry.sehr);
+    const iftarTime = parseHHMM(entry.iftar);
+
+    let label, targetTime;
+    if (now < sehrTime) {
+        label = 'Sehr In';
+        targetTime = sehrTime;
+    } else if (now < iftarTime) {
+        label = 'Iftar In';
+        targetTime = iftarTime;
+    } else {
+        label = 'Iftar Done';
+        document.getElementById('sehr-iftar-countdown').textContent = '✓';
+        document.getElementById('sehr-iftar-label').textContent = label;
+        return;
+    }
+    document.getElementById('sehr-iftar-label').textContent = label;
+    document.getElementById('sehr-iftar-countdown').textContent = formatCountdown(targetTime - now);
+}
+
+// ── PRAYER COUNTDOWN ──────────────────────────────────────
+function findNextPrayer() {
+    const now = new Date();
+    const dayOfWeek = now.getDay();
+    if (dayOfWeek === 5) {
+        const jummahTime = parseTimeString(prayerTimes.fridayPrayer);
+        const fajrTime = parseTimeString(prayerTimes.fajr);
+        if (now > fajrTime && jummahTime > now) {
+            return { name: "Jumu'ah", time: jummahTime };
         }
-        
-        // Function to format date as "DD Month YYYY"
-        function formatDate(date) {
-            const options = { day: 'numeric', month: 'long', year: 'numeric' };
-            return date.toLocaleDateString('en-US', options);
+    }
+    const prayers = [
+        { name:'Fajr',    time: parseTimeString(prayerTimes.fajr) },
+        { name:'Dhuhr',   time: parseTimeString(prayerTimes.dhuhr) },
+        { name:'Asr',     time: parseTimeString(prayerTimes.asr) },
+        { name:'Maghrib', time: parseTimeString(prayerTimes.maghrib) },
+        { name:'Isha',    time: parseTimeString(prayerTimes.isha) }
+    ];
+    const future = prayers.filter(p => p.time > now);
+    if (future.length === 0) {
+        const tomorrow = parseTimeString(prayerTimes.fajr);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        return { name:'Fajr', time: tomorrow };
+    }
+    return future[0];
+}
+
+function updateCountdown() {
+    const next = findNextPrayer();
+    document.getElementById('next-prayer-name').textContent = next.name;
+    const now = new Date();
+    document.getElementById('countdown').textContent = formatCountdown(next.time - now);
+    updateRamadanBanner();
+}
+
+// ── TODAY DISPLAY ─────────────────────────────────────────
+function updateTodayDisplay() {
+    document.getElementById('current-date').textContent = formatDate(new Date());
+    document.getElementById('today-fajr').textContent = prayerTimes.fajr;
+    document.getElementById('today-dhuhr').textContent = prayerTimes.dhuhr;
+    document.getElementById('today-asr').textContent = prayerTimes.asr;
+    document.getElementById('today-maghrib').textContent = prayerTimes.maghrib;
+    document.getElementById('today-isha').textContent = prayerTimes.isha;
+    document.getElementById('today-friday-prayer').textContent = prayerTimes.fridayPrayer;
+}
+
+// ── CLOCK ─────────────────────────────────────────────────
+function drawClock() {
+    const canvas = document.getElementById('clock');
+    const ctx = canvas.getContext('2d');
+    const r = canvas.height / 2;
+    ctx.translate(r, r);
+    const scale = 0.9;
+
+    function tick() {
+        ctx.clearRect(-r, -r, canvas.width, canvas.height);
+        // Face
+        ctx.beginPath();
+        ctx.arc(0, 0, r*scale, 0, 2*Math.PI);
+        ctx.fillStyle = 'rgba(0,229,195,0.06)';
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(0,229,195,0.3)';
+        ctx.lineWidth = r * 0.05;
+        ctx.stroke();
+        // Dots
+        for (let i=1; i<=12; i++) {
+            const a = i * Math.PI/6;
+            ctx.beginPath();
+            ctx.arc(Math.sin(a)*r*0.76, -Math.cos(a)*r*0.76, r*0.035, 0, 2*Math.PI);
+            ctx.fillStyle = 'rgba(0,229,195,0.6)';
+            ctx.fill();
         }
-        
-        // Function to parse time string to Date object
-        function parseTimeString(timeStr) {
-            const [time, period] = timeStr.split(' ');
-            let [hours, minutes] = time.split(':');
-            
-            hours = parseInt(hours);
-            minutes = parseInt(minutes);
-            
-            // Convert to 24-hour format
-            if (period === 'PM' && hours !== 12) {
-                hours += 12;
-            } else if (period === 'AM' && hours === 12) {
-                hours = 0;
-            }
-            
-            const today = new Date();
-            const prayerTime = new Date(today.getFullYear(), today.getMonth(), today.getDate(), hours, minutes, 0);
-            
-            return prayerTime;
-        }
-        
-        // Function to check if it's Friday and time is after Fajr
-        function isFridayAfterFajr() {
-            const now = new Date();
-            const dayOfWeek = now.getDay(); // 0 = Sunday, 5 = Friday
-            
-            if (dayOfWeek !== 5) {
-                return false; // Not Friday
-            }
-            
-            const fajrTime = parseTimeString(prayerTimes.fajr);
-            return now > fajrTime; // Check if current time is after Fajr
-        }
-        
-        // Function to find next prayer with Friday logic
-        function findNextPrayer() {
-            const now = new Date();
-            const dayOfWeek = now.getDay(); // 0 = Sunday, 5 = Friday
-            
-            // If it's Friday and after Fajr, prioritize Jummah prayer
-            if (isFridayAfterFajr()) {
-                const jummahTime = parseTimeString(prayerTimes.fridayPrayer);
-                
-                // If Jummah hasn't passed yet, return it
-                if (jummahTime > now) {
-                    return { name: "Jumu'ah", time: jummahTime, isFriday: true };
-                }
-            }
-            
-            // Regular prayer logic
-            const prayers = [
-                { name: 'Fajr', time: parseTimeString(prayerTimes.fajr) },
-                { name: 'Dhuhr', time: parseTimeString(prayerTimes.dhuhr) },
-                { name: 'Asr', time: parseTimeString(prayerTimes.asr) },
-                { name: 'Maghrib', time: parseTimeString(prayerTimes.maghrib) },
-                { name: 'Isha', time: parseTimeString(prayerTimes.isha) }
-            ];
-            
-            // Filter future prayers
-            let futurePrayers = prayers.filter(prayer => prayer.time > now);
-            
-            // If no future prayers today, return tomorrow's Fajr
-            if (futurePrayers.length === 0) {
-                const tomorrowFajr = parseTimeString(prayerTimes.fajr);
-                tomorrowFajr.setDate(tomorrowFajr.getDate() + 1);
-                return { name: 'Fajr', time: tomorrowFajr, isFriday: false };
-            }
-            
-            // Return the next prayer
-            return { ...futurePrayers[0], isFriday: false };
-        }
-        
-        // Function to update countdown
-        function updateCountdown() {
-            const nextPrayer = findNextPrayer();
-            const nextPrayerContainer = document.getElementById('next-prayer-container');
-            const nextPrayerTitle = document.getElementById('next-prayer-title');
-            
-            // Update styling for Friday
-            if (nextPrayer.isFriday) {
-                nextPrayerContainer.classList.add('friday-special');
-                nextPrayerTitle.textContent = '🕌 Next Jumu\'ah Prayer';
-            } else {
-                nextPrayerContainer.classList.remove('friday-special');
-                nextPrayerTitle.textContent = 'Next Prayer';
-            }
-            
-            document.getElementById('next-prayer-name').textContent = nextPrayer.name;
-            
-            const now = new Date();
-            const diff = nextPrayer.time - now;
-            
-            const hours = Math.floor(diff / (1000 * 60 * 60));
-            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-            
-            const formattedTime = 
-                String(hours).padStart(2, '0') + ':' + 
-                String(minutes).padStart(2, '0') + ':' + 
-                String(seconds).padStart(2, '0');
-            
-            document.getElementById('countdown').textContent = formattedTime;
-        }
-        
-        // Function to update today's display
-        function updateTodayDisplay() {
-            const currentDateEl = document.getElementById('current-date');
-            
-            const today = new Date();
-            currentDateEl.textContent = formatDate(today);
-            
-            // Update prayer times
-            document.getElementById('today-fajr').textContent = prayerTimes.fajr;
-            document.getElementById('today-dhuhr').textContent = prayerTimes.dhuhr;
-            document.getElementById('today-asr').textContent = prayerTimes.asr;
-            document.getElementById('today-maghrib').textContent = prayerTimes.maghrib;
-            document.getElementById('today-isha').textContent = prayerTimes.isha;
-            document.getElementById('today-friday-prayer').textContent = prayerTimes.fridayPrayer;
-        }
-        
-        // Updated Quranic verses related to prayer, ease, and self-reflection
-        const quranVerses = [
-            {
-                arabic: "وَأَقِمِ الصَّلَاةَ ۖ إِنَّ الصَّلَاةَ تَنْهَىٰ عَنِ الْفَحْشَاءِ وَالْمُنكَرِ",
-                english: "Establish prayer. Indeed, prayer prohibits immorality and wrongdoing.",
-                source: "Surah Al-Ankabut (29:45)"
-            },
-            {
-                arabic: "يَا أَيُّهَا الَّذِينَ آمَنُوا إِذَا نُودِيَ لِلصَّلَاةِ مِن يَوْمِ الْجُمُعَةِ فَاسْعَوْا إِلَىٰ ذِكْرِ اللَّهِ",
-                english: "O you who believe! When the call is made for prayer on Friday, then hasten to the remembrance of Allah.",
-                source: "Surah Al-Jumu'ah (62:9)"
-            },
-            {
-                arabic: "وَاصْبِرْ وَمَا صَبْرُكَ إِلَّا بِاللَّهِ",
-                english: "And be patient, and your patience is not but through Allah.",
-                source: "Surah An-Nahl (16:127)"
-            },
-            {
-                arabic: "الَّذِينَ آمَنُوا وَتَطْمَئِنُّ قُلُوبُهُم بِذِكْرِ اللَّهِ ۗ أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ",
-                english: "Those who have believed and whose hearts are assured by the remembrance of Allah. Unquestionably, by the remembrance of Allah hearts are assured.",
-                source: "Surah Ar-Ra'd (13:28)"
-            },
-            {
-                arabic: "فَاذْكُرُونِي أَذْكُرْكُمْ وَاشْكُرُوا لِي وَلَا تَكْفُرُونِ",
-                english: "So remember Me; I will remember you. And be grateful to Me and do not deny Me.",
-                source: "Surah Al-Baqarah (2:152)"
-            },
-            {
-                arabic: "وَإِذَا سَأَلَكَ عِبَادِي عَنِّي فَإِنِّي قَرِيبٌ ۖ أُجِيبُ دَعْوَةَ الدَّاعِ إِذَا دَعَانِ",
-                english: "And when My servants ask you concerning Me - indeed I am near. I respond to the invocation of the supplicant when he calls upon Me.",
-                source: "Surah Al-Baqarah (2:186)"
-            },
-            {
-                arabic: "الَّذِينَ هُمْ فِي صَلَاتِهِمْ خَاشِعُونَ",
-                english: "Who are humbly submissive during their prayer.",
-                source: "Surah Al-Mu'minun (23:2)"
-            },
-            {
-                arabic: "وَاسْتَعِينُوا بِالصَّبْرِ وَالصَّلَاةِ",
-                english: "And seek help through patience and prayer.",
-                source: "Surah Al-Baqarah (2:45)"
-            }
-        ];
-        
-        // Updated Hadith data related to prayer, ease, and self-reflection
-        const hadiths = [
-            {
-                text: "The five daily prayers and the Friday prayer until the next Friday prayer, and Ramadan until the next Ramadan, are expiations for whatever sins come in between, so long as one refrains from major sins.",
-                source: "Sahih Muslim"
-            },
-            {
-                text: "Friday prayer is obligatory upon every Muslim, except four: a slave, a woman, a child, and one who is sick.",
-                source: "Abu Dawud"
-            },
-            {
-                text: "The key to Paradise is prayer, and the key to prayer is cleanliness.",
-                source: "Ahmad and Tirmidhi"
-            },
-            {
-                text: "Prayer is the pillar of religion. Whoever establishes it has established religion, and whoever neglects it has demolished religion.",
-                source: "Al-Bayhaqi"
-            },
-            {
-                text: "The Prophet (ﷺ) was asked, 'Which deed is most beloved to Allah?' He said, 'Prayer at its proper time.'",
-                source: "Sahih al-Bukhari"
-            },
-            {
-                text: "The five prayers are like a river of fresh water flowing in front of your house. If one of you were to bathe in it five times a day, would any dirt remain on him? They said, 'No dirt would remain on him.' The Prophet (ﷺ) said, 'That is the likeness of the five prayers by which Allah erases sins.'",
-                source: "Sahih Muslim"
-            },
-            {
-                text: "Whoever comes to Friday prayer, having performed ablution properly, and listens attentively without talking, will have all his sins between that Friday and the next forgiven, and three more days besides.",
-                source: "Sahih Muslim"
-            },
-            {
-                text: "Take advantage of five before five: your youth before your old age, your health before your sickness, your wealth before your poverty, your free time before your busyness, and your life before your death.",
-                source: "Al-Hakim"
-            }
-        ];
-        
-        // Function to fetch Quranic verse
-        async function fetchQuranVerse() {
-            document.getElementById('quran-content').innerHTML = '<div class="loading">Loading verse...</div>';
-            
-            // Simulate API fetch delay
-            await new Promise(resolve => setTimeout(resolve, 500));
-            
-            try {
-                // Use local verses
-                const randomVerse = quranVerses[Math.floor(Math.random() * quranVerses.length)];
-                
-                let html = `
-                    <div class="arabic-text">${randomVerse.arabic}</div>
-                    <div class="inspiration-text">${randomVerse.english}</div>
-                    <div class="inspiration-source">${randomVerse.source}</div>
-                `;
-                
-                document.getElementById('quran-content').innerHTML = html;
-            } catch (error) {
-                document.getElementById('quran-content').innerHTML = `
-                    <div class="inspiration-text">Failed to load verse. Please try again.</div>
-                `;
-            }
-        }
-        
-        // Function to fetch Hadith
-        async function fetchHadith() {
-            document.getElementById('hadith-content').innerHTML = '<div class="loading">Loading hadith...</div>';
-            
-            // Simulate API fetch delay
-            await new Promise(resolve => setTimeout(resolve, 500));
-            
-            try {
-                // Use local hadith data
-                const randomHadith = hadiths[Math.floor(Math.random() * hadiths.length)];
-                
-                let html = `
-                    <div class="inspiration-text">${randomHadith.text}</div>
-                    <div class="inspiration-source">${randomHadith.source}</div>
-                `;
-                
-                document.getElementById('hadith-content').innerHTML = html;
-            } catch (error) {
-                document.getElementById('hadith-content').innerHTML = `
-                    <div class="inspiration-text">Failed to load hadith. Please try again.</div>
-                `;
-            }
-        }
-        
-        // Initialize the page
-        window.addEventListener('load', function() {
-            try {
-                drawClock();
-                updateTodayDisplay();
-                updateCountdown();
-                fetchQuranVerse();
-                fetchHadith();
-                
-                // Update the countdown every second
-                setInterval(updateCountdown, 1000);
-                
-                // Update the time every minute
-                setInterval(updateTodayDisplay, 60000);
-                
-                // Add event listeners for refresh buttons
-                document.getElementById('refresh-quran').addEventListener('click', fetchQuranVerse);
-                document.getElementById('refresh-hadith').addEventListener('click', fetchHadith);
-            } catch (error) {
-                console.error("Error during initialization:", error);
-            }
-        });
-    </script>
+        const now = new Date();
+        const h = now.getHours()%12, m = now.getMinutes(), s = now.getSeconds();
+        hand(ctx, (h*30)+(m*0.5), r*0.48, r*0.07, '#e8f5f3');
+        hand(ctx, m*6, r*0.74, r*0.05, '#00e5c3');
+        hand(ctx, s*6, r*0.8, r*0.02, '#c9a84c');
+        ctx.beginPath();
+        ctx.arc(0, 0, r*0.09, 0, 2*Math.PI);
+        ctx.fillStyle = '#00e5c3';
+        ctx.fill();
+    }
+
+    function hand(ctx, deg, len, w, color) {
+        ctx.beginPath();
+        ctx.lineWidth = w; ctx.lineCap = 'round'; ctx.strokeStyle = color;
+        const a = (deg-90)*Math.PI/180;
+        ctx.moveTo(0,0);
+        ctx.lineTo(len*Math.cos(a), len*Math.sin(a));
+        ctx.stroke();
+    }
+
+    setInterval(tick, 1000);
+    tick();
+}
+
+// ── INSPIRATION ───────────────────────────────────────────
+async function fetchQuranVerse() {
+    document.getElementById('quran-content').innerHTML = '<div class="loading">Loading verse…</div>';
+    await new Promise(r => setTimeout(r, 300));
+    const v = quranVerses[Math.floor(Math.random()*quranVerses.length)];
+    document.getElementById('quran-content').innerHTML = `
+        <div class="arabic-text">${v.arabic}</div>
+        <div class="inspiration-text">${v.english}</div>
+        <div class="inspiration-source">${v.source}</div>`;
+}
+
+async function fetchHadith() {
+    document.getElementById('hadith-content').innerHTML = '<div class="loading">Loading hadith…</div>';
+    await new Promise(r => setTimeout(r, 300));
+    const h = hadiths[Math.floor(Math.random()*hadiths.length)];
+    document.getElementById('hadith-content').innerHTML = `
+        <div class="inspiration-text">${h.text}</div>
+        <div class="inspiration-source">${h.source}</div>`;
+}
+
+// ── INIT ──────────────────────────────────────────────────
+window.addEventListener('load', () => {
+    drawClock();
+    updateTodayDisplay();
+    buildTable();
+    updateCountdown();
+    fetchQuranVerse();
+    fetchHadith();
+    setInterval(updateCountdown, 1000);
+    setInterval(updateTodayDisplay, 60000);
+    document.getElementById('refresh-quran').addEventListener('click', fetchQuranVerse);
+    document.getElementById('refresh-hadith').addEventListener('click', fetchHadith);
+});
+</script>
 </body>
 </html>
