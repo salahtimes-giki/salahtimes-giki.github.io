@@ -76,8 +76,41 @@
 
         .clock-container {
             position: absolute;
-            top: 0;
-            left: 0;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -60%);
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.55;
+            filter: blur(1.5px);
+        }
+
+        .clock-container canvas {
+            width: 130px;
+            height: 130px;
+        }
+
+        /* On desktop, keep clock tucked top-left */
+        @media (min-width: 600px) {
+            .clock-container {
+                position: absolute;
+                top: 0;
+                left: 0;
+                transform: none;
+                opacity: 1;
+                filter: blur(0px);
+            }
+            .clock-container canvas {
+                width: 80px;
+                height: 80px;
+            }
+        }
+
+        header .ramadan-badge,
+        header h1,
+        header .date-display {
+            position: relative;
+            z-index: 1;
         }
 
         .ramadan-badge {
