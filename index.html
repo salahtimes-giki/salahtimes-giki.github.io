@@ -34,7 +34,6 @@
             overflow-x: hidden;
         }
 
-        /* Ambient background */
         body::before {
             content: '';
             position: fixed;
@@ -104,9 +103,7 @@
             margin-bottom: 6px;
         }
 
-        h1 span {
-            color: var(--teal-vivid);
-        }
+        h1 span { color: var(--teal-vivid); }
 
         .date-display {
             font-size: 1rem;
@@ -129,9 +126,7 @@
             box-shadow: 0 0 30px rgba(201, 168, 76, 0.06);
         }
 
-        .ramadan-block {
-            text-align: center;
-        }
+        .ramadan-block { text-align: center; }
 
         .ramadan-label {
             font-size: 0.75rem;
@@ -149,15 +144,17 @@
             line-height: 1;
         }
 
-        .ramadan-value.gold {
-            color: var(--gold-light);
-        }
+        .ramadan-value.gold { color: var(--gold-light); }
 
         .ramadan-divider {
             width: 1px;
             height: 50px;
             background: rgba(201, 168, 76, 0.2);
         }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
 
         /* ── NEXT PRAYER ── */
         .next-prayer {
@@ -168,6 +165,13 @@
             margin-bottom: 24px;
             text-align: center;
             box-shadow: 0 0 40px var(--teal-glow);
+            transition: border-color 0.4s, box-shadow 0.4s;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .next-prayer.mode-sehri {
+            border-color: rgba(201,168,76,0.45);
+            box-shadow: 0 0 40px rgba(201,168,76,0.1);
         }
 
         .next-prayer h2 {
@@ -180,17 +184,24 @@
             font-weight: 400;
         }
 
+        .next-prayer.mode-sehri h2 { color: var(--gold); }
+
         .next-prayer-name {
             font-size: 1.9rem;
             font-family: 'Cinzel', serif;
             color: var(--teal-vivid);
         }
 
+        .next-prayer.mode-sehri .next-prayer-name { color: var(--gold-light); }
+
         .next-prayer-in {
             font-size: 1rem;
             color: var(--text-secondary);
             margin: 0 8px;
         }
+
+        /* hide the "in" text when in static display mode */
+        .next-prayer.mode-static .next-prayer-in { display: none; }
 
         .countdown {
             font-size: 2.6rem;
@@ -200,6 +211,17 @@
             margin-top: 4px;
             font-variant-numeric: tabular-nums;
         }
+
+        /* big static time for iftar/sehri display */
+        .static-time {
+            font-size: 2.8rem;
+            font-weight: 300;
+            letter-spacing: 0.05em;
+            margin-top: 6px;
+            color: var(--teal-vivid);
+        }
+
+        .next-prayer.mode-sehri .static-time { color: var(--gold-light); }
 
         /* ── PRAYER GRID ── */
         .section-title {
@@ -257,79 +279,6 @@
             font-size: 1.4rem;
             font-weight: 300;
             color: var(--text-primary);
-        }
-
-        /* ── RAMADAN TABLE ── */
-        .ramadan-section {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            padding: 24px;
-            margin-bottom: 24px;
-            overflow: hidden;
-        }
-
-        .table-scroll {
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.95rem;
-        }
-
-        thead th {
-            font-family: 'Cinzel', serif;
-            font-size: 0.7rem;
-            letter-spacing: 0.18em;
-            text-transform: uppercase;
-            color: var(--teal-mid);
-            padding: 10px 14px;
-            text-align: left;
-            border-bottom: 1px solid var(--border-strong);
-            font-weight: 400;
-        }
-
-        tbody tr {
-            border-bottom: 1px solid rgba(0,229,195,0.05);
-            transition: background 0.15s;
-        }
-
-        tbody tr:hover {
-            background: var(--teal-glow2);
-        }
-
-        tbody tr.today-row {
-            background: rgba(0, 229, 195, 0.08);
-            border-left: 2px solid var(--teal-vivid);
-        }
-
-        tbody td {
-            padding: 9px 14px;
-            color: var(--text-primary);
-        }
-
-        tbody td.sehr { color: var(--gold-light); }
-        tbody td.iftar { color: #7af0d0; }
-        tbody td.roza-num {
-            font-family: 'Cinzel', serif;
-            color: var(--text-secondary);
-            font-size: 0.85rem;
-        }
-
-        .today-tag {
-            display: inline-block;
-            font-size: 0.6rem;
-            letter-spacing: 0.12em;
-            text-transform: uppercase;
-            background: var(--teal-vivid);
-            color: #000;
-            border-radius: 4px;
-            padding: 1px 6px;
-            margin-left: 6px;
-            font-family: 'Cinzel', serif;
-            vertical-align: middle;
         }
 
         /* ── INSPIRATION ── */
@@ -426,9 +375,109 @@
             letter-spacing: 0.08em;
         }
 
-        .loading {
-            color: var(--text-muted);
-            font-style: italic;
+        .loading { color: var(--text-muted); font-style: italic; }
+
+        /* ── RAMADAN TABLE (Collapsible) ── */
+        .ramadan-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            margin-bottom: 24px;
+            overflow: hidden;
+        }
+
+        .collapsible-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 24px;
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.2s;
+        }
+
+        .collapsible-header:hover {
+            background: var(--teal-glow2);
+        }
+
+        .collapsible-chevron {
+            font-size: 0.9rem;
+            color: var(--teal-mid);
+            transition: transform 0.35s ease;
+            flex-shrink: 0;
+        }
+
+        .collapsible-chevron.open {
+            transform: rotate(180deg);
+        }
+
+        .collapsible-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .collapsible-body.open {
+            max-height: 2000px;
+        }
+
+        .collapsible-inner {
+            padding: 0 24px 24px;
+        }
+
+        .table-scroll { overflow-x: auto; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+        }
+
+        thead th {
+            font-family: 'Cinzel', serif;
+            font-size: 0.7rem;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--teal-mid);
+            padding: 10px 14px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-strong);
+            font-weight: 400;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid rgba(0,229,195,0.05);
+            transition: background 0.15s;
+        }
+
+        tbody tr:hover { background: var(--teal-glow2); }
+
+        tbody tr.today-row {
+            background: rgba(0, 229, 195, 0.08);
+            border-left: 2px solid var(--teal-vivid);
+        }
+
+        tbody td { padding: 9px 14px; color: var(--text-primary); }
+        tbody td.sehr { color: var(--gold-light); }
+        tbody td.iftar { color: #7af0d0; }
+        tbody td.roza-num {
+            font-family: 'Cinzel', serif;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        .today-tag {
+            display: inline-block;
+            font-size: 0.6rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            background: var(--teal-vivid);
+            color: #000;
+            border-radius: 4px;
+            padding: 1px 6px;
+            margin-left: 6px;
+            font-family: 'Cinzel', serif;
+            vertical-align: middle;
         }
 
         /* ── FOOTER ── */
@@ -440,10 +489,8 @@
             border-top: 1px solid var(--border);
         }
 
-        /* ── CLOCK ── */
         canvas { display: block; }
     </style>
-
 </head>
 <body>
 <div class="container">
@@ -481,14 +528,23 @@
         </div>
     </div>
 
-    <!-- NEXT PRAYER -->
+    <!-- NEXT PRAYER / IFTAR / SEHRI BOX -->
     <div class="next-prayer" id="next-prayer-container">
-        <h2 id="next-prayer-title">Next Prayer</h2>
-        <div>
-            <span class="next-prayer-name" id="next-prayer-name">—</span>
-            <span class="next-prayer-in">in</span>
+        <!-- Normal countdown mode -->
+        <div id="mode-countdown">
+            <h2>Next Prayer</h2>
+            <div>
+                <span class="next-prayer-name" id="next-prayer-name">—</span>
+                <span class="next-prayer-in">in</span>
+            </div>
+            <div class="countdown" id="countdown">00:00:00</div>
         </div>
-        <div class="countdown" id="countdown">00:00:00</div>
+        <!-- Static display mode: after Asr → Iftar | after Isha → Sehri -->
+        <div id="mode-static" style="display:none;">
+            <h2 id="static-label">IFTAR STARTS AT</h2>
+            <div class="next-prayer-name" id="static-name">Iftar</div>
+            <div class="static-time" id="static-time">—</div>
+        </div>
     </div>
 
     <!-- DAILY PRAYER TIMES -->
@@ -497,23 +553,23 @@
         <div class="prayer-grid">
             <div class="prayer-card" id="card-fajr">
                 <div class="prayer-name">Fajr</div>
-                <div class="prayer-time" id="today-fajr">5:45 AM</div>
+                <div class="prayer-time" id="today-fajr">—</div>
             </div>
             <div class="prayer-card" id="card-dhuhr">
                 <div class="prayer-name">Dhuhr</div>
-                <div class="prayer-time" id="today-dhuhr">1:45 PM</div>
+                <div class="prayer-time" id="today-dhuhr">—</div>
             </div>
             <div class="prayer-card" id="card-asr">
                 <div class="prayer-name">Asr</div>
-                <div class="prayer-time" id="today-asr">4:45 PM</div>
+                <div class="prayer-time" id="today-asr">—</div>
             </div>
             <div class="prayer-card" id="card-maghrib">
                 <div class="prayer-name">Maghrib</div>
-                <div class="prayer-time" id="today-maghrib">5:49 PM</div>
+                <div class="prayer-time" id="today-maghrib">—</div>
             </div>
             <div class="prayer-card" id="card-isha">
                 <div class="prayer-name">Isha</div>
-                <div class="prayer-time" id="today-isha">7:45 PM</div>
+                <div class="prayer-time" id="today-isha">—</div>
             </div>
             <div class="prayer-card" id="card-friday">
                 <div class="prayer-name">Jumu'ah</div>
@@ -522,25 +578,7 @@
         </div>
     </div>
 
-    <!-- RAMADAN SCHEDULE TABLE -->
-    <div class="ramadan-section">
-        <div class="section-title">Ramadan 1447 – Sehr &amp; Iftar Schedule · GIKI</div>
-        <div class="table-scroll">
-        <table>
-            <thead>
-                <tr>
-                    <th>Roza</th>
-                    <th>Date</th>
-                    <th>Sehr</th>
-                    <th>Iftar</th>
-                </tr>
-            </thead>
-            <tbody id="ramadan-table-body"></tbody>
-        </table>
-        </div>
-    </div>
-
-    <!-- INSPIRATION -->
+    <!-- INSPIRATION (before Ramadan calendar) -->
     <div class="daily-inspiration">
         <div class="inspiration-box">
             <h3>
@@ -558,6 +596,31 @@
         </div>
     </div>
 
+    <!-- RAMADAN SCHEDULE TABLE (Collapsible) -->
+    <div class="ramadan-section">
+        <div class="collapsible-header" id="ramadan-toggle" role="button" aria-expanded="false">
+            <div class="section-title" style="margin-bottom:0;">Ramadan 1447 – Sehr &amp; Iftar Schedule · GIKI</div>
+            <span class="collapsible-chevron" id="ramadan-chevron">▼</span>
+        </div>
+        <div class="collapsible-body" id="ramadan-body">
+            <div class="collapsible-inner">
+                <div class="table-scroll">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Roza</th>
+                                <th>Date</th>
+                                <th>Sehr</th>
+                                <th>Iftar</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ramadan-table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <footer>
         <p>GIKI Prayer Timings · Ramadan 2026 · Updated for 1447 AH</p>
     </footer>
@@ -565,13 +628,13 @@
 
 <script>
 // ── DATA ──────────────────────────────────────────────────
-const prayerTimes = {
-    fajr: "5:45 AM",
-    dhuhr: "1:45 PM",
-    asr: "4:45 PM",
-    maghrib: "5:59 PM",
-    isha: "7:45 PM",
+const BASE_PRAYER_TIMES = {
+    fajr:         "5:45 AM",
+    dhuhr:        "1:45 PM",
+    asr:          "4:45 PM",
+    isha:         "7:45 PM",
     fridayPrayer: "1:30 PM"
+    // Maghrib is auto-calculated per day as iftar + 5 minutes
 };
 
 const ramadanData = [
@@ -606,7 +669,6 @@ const ramadanData = [
     { roza:29, date:"2026-03-19", sehr:"04:51", iftar:"18:23" }
 ];
 
-// Fasting, patience, prayer, dhikr – authentic verses
 const quranVerses = [
     {
         arabic: "يَا أَيُّهَا الَّذِينَ آمَنُوا كُتِبَ عَلَيْكُمُ الصِّيَامُ كَمَا كُتِبَ عَلَى الَّذِينَ مِن قَبْلِكُمْ لَعَلَّكُمْ تَتَّقُونَ",
@@ -644,18 +706,12 @@ const quranVerses = [
         source: "Surah Al-Ankabut (29:45)"
     },
     {
-        arabic: "إِنَّ اللَّهَ وَمَلَائِكَتَهُ يُصَلُّونَ عَلَى النَّبِيِّ ۚ يَا أَيُّهَا الَّذِينَ آمَنُوا صَلُّوا عَلَيْهِ وَسَلِّمُوا تَسْلِيمًا",
-        english: "Indeed, Allah confers blessing upon the Prophet, and His angels ask Him to do so. O you who have believed, ask Him to confer blessing upon him and ask Him for peace.",
-        source: "Surah Al-Ahzab (33:56)"
-    },
-    {
         arabic: "وَاصْبِرْ وَمَا صَبْرُكَ إِلَّا بِاللَّهِ",
         english: "And be patient, and your patience is not but through Allah.",
         source: "Surah An-Nahl (16:127)"
     }
 ];
 
-// Authentic ahadith – fasting, prayer, dhikr – Sahih Bukhari primary, Sahih Muslim if needed
 const hadiths = [
     {
         text: "Every deed of the son of Adam is multiplied from ten to seven hundred times. Allah, Exalted be He, said: 'Except for fasting, for it is for Me and I shall reward it Myself; he gives up his desire and his food for My sake.'",
@@ -682,19 +738,11 @@ const hadiths = [
         source: "Sahih al-Bukhari"
     },
     {
-        text: "The Prophet ﷺ said: 'The five daily prayers and the Friday prayer to the next Friday prayer are expiation for what is between them, as long as major sins are avoided.'",
-        source: "Sahih Muslim"
-    },
-    {
         text: "The Prophet ﷺ said: 'When Ramadan begins, the gates of Paradise are opened and the gates of Hell are closed, and the devils are chained.'",
         source: "Sahih al-Bukhari"
     },
     {
         text: "The Prophet ﷺ said: 'Take up good deeds only as much as you are able, for the best deeds are those done regularly even if they are few.'",
-        source: "Sahih al-Bukhari"
-    },
-    {
-        text: "The Prophet ﷺ said: 'Two words are light on the tongue, heavy on the scale, beloved to the Most Merciful: SubhanAllahi wa bihamdih, SubhanAllahil Azeem.'",
         source: "Sahih al-Bukhari"
     }
 ];
@@ -702,10 +750,7 @@ const hadiths = [
 // ── HELPERS ───────────────────────────────────────────────
 function todayStr() {
     const d = new Date();
-    const y = d.getFullYear();
-    const m = String(d.getMonth()+1).padStart(2,'0');
-    const day = String(d.getDate()).padStart(2,'0');
-    return `${y}-${m}-${day}`;
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 }
 
 function formatDate(date) {
@@ -735,6 +780,57 @@ function formatCountdown(ms) {
     return `${String(h).padStart(2,'0')}:${String(min).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
 }
 
+/** Format a Date object to 12-hour time string like "6:04 PM" */
+function formatTime12(date) {
+    let h = date.getHours(), m = date.getMinutes();
+    const ampm = h >= 12 ? 'PM' : 'AM';
+    h = h % 12 || 12;
+    return `${h}:${String(m).padStart(2,'0')} ${ampm}`;
+}
+
+/**
+ * Returns today's Maghrib time = iftar + 5 minutes.
+ * Falls back to the fixed time if today isn't in Ramadan data.
+ */
+function getTodayMaghrib() {
+    const today = todayStr();
+    const entry = ramadanData.find(r => r.date === today);
+    if (entry) {
+        const iftarDate = parseHHMM(entry.iftar);
+        iftarDate.setMinutes(iftarDate.getMinutes() + 5);
+        return iftarDate;
+    }
+    return parseTimeString("5:59 PM"); // fallback
+}
+
+function getTodayIftar() {
+    const today = todayStr();
+    const entry = ramadanData.find(r => r.date === today);
+    return entry ? parseHHMM(entry.iftar) : null;
+}
+
+function getTodaySehr() {
+    const today = todayStr();
+    const entry = ramadanData.find(r => r.date === today);
+    return entry ? parseHHMM(entry.sehr) : null;
+}
+
+// After Isha we need TOMORROW's sehri
+function getTomorrowSehr() {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const tStr = tomorrow.getFullYear() + '-'
+        + String(tomorrow.getMonth()+1).padStart(2,'0') + '-'
+        + String(tomorrow.getDate()).padStart(2,'0');
+    const entry = ramadanData.find(r => r.date === tStr);
+    if (entry) {
+        // Return as a Date object set to TOMORROW's date
+        const [h, m] = entry.sehr.split(':').map(Number);
+        return new Date(tomorrow.getFullYear(), tomorrow.getMonth(), tomorrow.getDate(), h, m, 0);
+    }
+    return null;
+}
+
 // ── TABLE ─────────────────────────────────────────────────
 function buildTable() {
     const today = todayStr();
@@ -752,9 +848,28 @@ function buildTable() {
         </tr>`;
     });
     tbody.innerHTML = html;
-    // Scroll to today row
-    const todayRow = tbody.querySelector('.today-row');
-    if (todayRow) setTimeout(() => todayRow.scrollIntoView({ block:'nearest', behavior:'smooth' }), 600);
+}
+
+// ── COLLAPSIBLE ───────────────────────────────────────────
+function initCollapsible() {
+    const toggle = document.getElementById('ramadan-toggle');
+    const body   = document.getElementById('ramadan-body');
+    const chev   = document.getElementById('ramadan-chevron');
+
+    toggle.addEventListener('click', () => {
+        const isOpen = body.classList.contains('open');
+        body.classList.toggle('open', !isOpen);
+        chev.classList.toggle('open', !isOpen);
+        toggle.setAttribute('aria-expanded', String(!isOpen));
+
+        // Scroll today row into view when opening
+        if (!isOpen) {
+            setTimeout(() => {
+                const todayRow = document.querySelector('.today-row');
+                if (todayRow) todayRow.scrollIntoView({ block:'nearest', behavior:'smooth' });
+            }, 460);
+        }
+    });
 }
 
 // ── RAMADAN TODAY BANNER ───────────────────────────────────
@@ -769,10 +884,9 @@ function updateRamadanBanner() {
     document.getElementById('today-sehr').textContent = entry.sehr;
     document.getElementById('today-iftar').textContent = entry.iftar;
 
-    // Countdown to sehr or iftar
-    const now = new Date();
-    const sehrTime = parseHHMM(entry.sehr);
-    const iftarTime = parseHHMM(entry.iftar);
+    const now      = new Date();
+    const sehrTime   = parseHHMM(entry.sehr);
+    const iftarTime  = parseHHMM(entry.iftar);
 
     let label, targetTime;
     if (now < sehrTime) {
@@ -791,27 +905,85 @@ function updateRamadanBanner() {
     document.getElementById('sehr-iftar-countdown').textContent = formatCountdown(targetTime - now);
 }
 
+// ── NEXT PRAYER BOX MODES ────────────────────────────────
+// Controls whether the box shows the prayer countdown OR a static Iftar/Sehri time
+function updateNextPrayerBox() {
+    // Guard: elements may not exist yet
+    const container     = document.getElementById('next-prayer-container');
+    const modeCountdown = document.getElementById('mode-countdown');
+    const modeStatic    = document.getElementById('mode-static');
+    const staticLabel   = document.getElementById('static-label');
+    const staticName    = document.getElementById('static-name');
+    const staticTime    = document.getElementById('static-time');
+    if (!container || !modeCountdown || !modeStatic) return;
+
+    const now       = new Date();
+    const asrTime   = parseTimeString(BASE_PRAYER_TIMES.asr);
+    const ishaTime  = parseTimeString(BASE_PRAYER_TIMES.isha);
+    const iftarDate = getTodayIftar();
+    const sehrDate  = getTodaySehr();
+
+    // Determine which mode to show
+    // After Isha (or midnight → before fajr): show TOMORROW's sehri
+    const fajrTime = parseTimeString(BASE_PRAYER_TIMES.fajr);
+    const isAfterIsha   = now >= ishaTime;
+    const isBeforeFajr  = now < fajrTime;  // handles midnight wrap when < fajr
+
+    if (isAfterIsha || isBeforeFajr) {
+        // Show tomorrow's sehri
+        const nextSehr = getTomorrowSehr() || getTodaySehr();
+        if (nextSehr) {
+            modeCountdown.style.display = 'none';
+            modeStatic.style.display    = 'block';
+            container.className = 'next-prayer mode-sehri';
+            if (staticLabel) staticLabel.textContent = 'SEHRI ENDS AT';
+            if (staticName)  staticName.textContent  = 'Suhoor';
+            if (staticTime)  staticTime.textContent  = formatTime12(nextSehr);
+            return;
+        }
+    }
+
+    if (now >= asrTime && now < ishaTime && iftarDate) {
+        // After Asr, before Isha → show Iftar start time
+        modeCountdown.style.display = 'none';
+        modeStatic.style.display    = 'block';
+        container.className = 'next-prayer mode-iftar';
+        if (staticLabel) staticLabel.textContent = 'IFTAR STARTS AT';
+        if (staticName)  staticName.textContent  = 'Iftar';
+        if (staticTime)  staticTime.textContent  = formatTime12(iftarDate);
+    } else {
+        // Normal mode: show prayer countdown
+        modeCountdown.style.display = 'block';
+        modeStatic.style.display    = 'none';
+        container.className = 'next-prayer';
+    }
+}
+
 // ── PRAYER COUNTDOWN ──────────────────────────────────────
 function findNextPrayer() {
     const now = new Date();
-    const dayOfWeek = now.getDay();
-    if (dayOfWeek === 5) {
-        const jummahTime = parseTimeString(prayerTimes.fridayPrayer);
-        const fajrTime = parseTimeString(prayerTimes.fajr);
+    const maghribDate = getTodayMaghrib();
+
+    // Friday Jumu'ah override
+    if (now.getDay() === 5) {
+        const jummahTime = parseTimeString(BASE_PRAYER_TIMES.fridayPrayer);
+        const fajrTime   = parseTimeString(BASE_PRAYER_TIMES.fajr);
         if (now > fajrTime && jummahTime > now) {
             return { name: "Jumu'ah", time: jummahTime };
         }
     }
+
     const prayers = [
-        { name:'Fajr',    time: parseTimeString(prayerTimes.fajr) },
-        { name:'Dhuhr',   time: parseTimeString(prayerTimes.dhuhr) },
-        { name:'Asr',     time: parseTimeString(prayerTimes.asr) },
-        { name:'Maghrib', time: parseTimeString(prayerTimes.maghrib) },
-        { name:'Isha',    time: parseTimeString(prayerTimes.isha) }
+        { name:'Fajr',    time: parseTimeString(BASE_PRAYER_TIMES.fajr) },
+        { name:'Dhuhr',   time: parseTimeString(BASE_PRAYER_TIMES.dhuhr) },
+        { name:'Asr',     time: parseTimeString(BASE_PRAYER_TIMES.asr) },
+        { name:'Maghrib', time: maghribDate },
+        { name:'Isha',    time: parseTimeString(BASE_PRAYER_TIMES.isha) }
     ];
+
     const future = prayers.filter(p => p.time > now);
     if (future.length === 0) {
-        const tomorrow = parseTimeString(prayerTimes.fajr);
+        const tomorrow = parseTimeString(BASE_PRAYER_TIMES.fajr);
         tomorrow.setDate(tomorrow.getDate() + 1);
         return { name:'Fajr', time: tomorrow };
     }
@@ -821,20 +993,23 @@ function findNextPrayer() {
 function updateCountdown() {
     const next = findNextPrayer();
     document.getElementById('next-prayer-name').textContent = next.name;
-    const now = new Date();
-    document.getElementById('countdown').textContent = formatCountdown(next.time - now);
+    document.getElementById('countdown').textContent = formatCountdown(next.time - new Date());
     updateRamadanBanner();
+    updateNextPrayerBox();
 }
 
 // ── TODAY DISPLAY ─────────────────────────────────────────
 function updateTodayDisplay() {
     document.getElementById('current-date').textContent = formatDate(new Date());
-    document.getElementById('today-fajr').textContent = prayerTimes.fajr;
-    document.getElementById('today-dhuhr').textContent = prayerTimes.dhuhr;
-    document.getElementById('today-asr').textContent = prayerTimes.asr;
-    document.getElementById('today-maghrib').textContent = prayerTimes.maghrib;
-    document.getElementById('today-isha').textContent = prayerTimes.isha;
-    document.getElementById('today-friday-prayer').textContent = prayerTimes.fridayPrayer;
+    document.getElementById('today-fajr').textContent    = BASE_PRAYER_TIMES.fajr;
+    document.getElementById('today-dhuhr').textContent   = BASE_PRAYER_TIMES.dhuhr;
+    document.getElementById('today-asr').textContent     = BASE_PRAYER_TIMES.asr;
+    document.getElementById('today-isha').textContent    = BASE_PRAYER_TIMES.isha;
+    document.getElementById('today-friday-prayer').textContent = BASE_PRAYER_TIMES.fridayPrayer;
+
+    // Maghrib = Iftar + 5 min
+    const maghrib = getTodayMaghrib();
+    document.getElementById('today-maghrib').textContent = formatTime12(maghrib);
 }
 
 // ── CLOCK ─────────────────────────────────────────────────
@@ -847,7 +1022,6 @@ function drawClock() {
 
     function tick() {
         ctx.clearRect(-r, -r, canvas.width, canvas.height);
-        // Face
         ctx.beginPath();
         ctx.arc(0, 0, r*scale, 0, 2*Math.PI);
         ctx.fillStyle = 'rgba(0,229,195,0.06)';
@@ -855,7 +1029,6 @@ function drawClock() {
         ctx.strokeStyle = 'rgba(0,229,195,0.3)';
         ctx.lineWidth = r * 0.05;
         ctx.stroke();
-        // Dots
         for (let i=1; i<=12; i++) {
             const a = i * Math.PI/6;
             ctx.beginPath();
@@ -912,6 +1085,7 @@ window.addEventListener('load', () => {
     drawClock();
     updateTodayDisplay();
     buildTable();
+    initCollapsible();
     updateCountdown();
     fetchQuranVerse();
     fetchHadith();
