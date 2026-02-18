@@ -90,7 +90,6 @@
             height: 130px;
         }
 
-        /* On desktop, keep clock tucked top-left */
         @media (min-width: 600px) {
             .clock-container {
                 position: absolute;
@@ -187,8 +186,6 @@
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
-
         /* ── NEXT PRAYER ── */
         .next-prayer {
             background: var(--bg-card);
@@ -233,9 +230,6 @@
             margin: 0 8px;
         }
 
-        /* hide the "in" text when in static display mode */
-        .next-prayer.mode-static .next-prayer-in { display: none; }
-
         .countdown {
             font-size: 2.6rem;
             font-weight: 300;
@@ -245,7 +239,6 @@
             font-variant-numeric: tabular-nums;
         }
 
-        /* big static time for iftar/sehri display */
         .static-time {
             font-size: 2.8rem;
             font-weight: 300;
@@ -611,7 +604,7 @@
         </div>
     </div>
 
-    <!-- INSPIRATION (before Ramadan calendar) -->
+    <!-- INSPIRATION -->
     <div class="daily-inspiration">
         <div class="inspiration-box">
             <h3>
@@ -667,7 +660,6 @@ const BASE_PRAYER_TIMES = {
     asr:          "4:45 PM",
     isha:         "7:45 PM",
     fridayPrayer: "1:30 PM"
-    // Maghrib is auto-calculated per day as iftar + 5 minutes
 };
 
 const ramadanData = [
@@ -813,7 +805,6 @@ function formatCountdown(ms) {
     return `${String(h).padStart(2,'0')}:${String(min).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
 }
 
-/** Format a Date object to 12-hour time string like "6:04 PM" */
 function formatTime12(date) {
     let h = date.getHours(), m = date.getMinutes();
     const ampm = h >= 12 ? 'PM' : 'AM';
@@ -821,10 +812,6 @@ function formatTime12(date) {
     return `${h}:${String(m).padStart(2,'0')} ${ampm}`;
 }
 
-/**
- * Returns today's Maghrib time = iftar + 5 minutes.
- * Falls back to the fixed time if today isn't in Ramadan data.
- */
 function getTodayMaghrib() {
     const today = todayStr();
     const entry = ramadanData.find(r => r.date === today);
@@ -833,7 +820,7 @@ function getTodayMaghrib() {
         iftarDate.setMinutes(iftarDate.getMinutes() + 5);
         return iftarDate;
     }
-    return parseTimeString("5:59 PM"); // fallback
+    return parseTimeString("5:59 PM");
 }
 
 function getTodayIftar() {
@@ -848,18 +835,21 @@ function getTodaySehr() {
     return entry ? parseHHMM(entry.sehr) : null;
 }
 
-// After Isha we need TOMORROW's sehri
-function getTomorrowSehr() {
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    const tStr = tomorrow.getFullYear() + '-'
-        + String(tomorrow.getMonth()+1).padStart(2,'0') + '-'
-        + String(tomorrow.getDate()).padStart(2,'0');
-    const entry = ramadanData.find(r => r.date === tStr);
+/**
+ * Gets sehr for a specific date offset from today.
+ * offset=0 → today, offset=1 → tomorrow, etc.
+ * Returns a Date object set to that calendar day.
+ */
+function getSehrForDateOffset(offset) {
+    const d = new Date();
+    d.setDate(d.getDate() + offset);
+    const dStr = d.getFullYear() + '-'
+        + String(d.getMonth()+1).padStart(2,'0') + '-'
+        + String(d.getDate()).padStart(2,'0');
+    const entry = ramadanData.find(r => r.date === dStr);
     if (entry) {
-        // Return as a Date object set to TOMORROW's date
         const [h, m] = entry.sehr.split(':').map(Number);
-        return new Date(tomorrow.getFullYear(), tomorrow.getMonth(), tomorrow.getDate(), h, m, 0);
+        return new Date(d.getFullYear(), d.getMonth(), d.getDate(), h, m, 0);
     }
     return null;
 }
@@ -895,7 +885,6 @@ function initCollapsible() {
         chev.classList.toggle('open', !isOpen);
         toggle.setAttribute('aria-expanded', String(!isOpen));
 
-        // Scroll today row into view when opening
         if (!isOpen) {
             setTimeout(() => {
                 const todayRow = document.querySelector('.today-row');
@@ -939,9 +928,14 @@ function updateRamadanBanner() {
 }
 
 // ── NEXT PRAYER BOX MODES ────────────────────────────────
-// Controls whether the box shows the prayer countdown OR a static Iftar/Sehri time
+/**
+ * Suhoor display logic:
+ *   • After Isha, before midnight (23:59:59)  → show TOMORROW's sehri
+ *   • After midnight (00:00:00), before Fajr  → show TODAY's sehri
+ *   • After Asr, before Isha                  → show today's Iftar time
+ *   • All other times                         → normal prayer countdown
+ */
 function updateNextPrayerBox() {
-    // Guard: elements may not exist yet
     const container     = document.getElementById('next-prayer-container');
     const modeCountdown = document.getElementById('mode-countdown');
     const modeStatic    = document.getElementById('mode-static');
@@ -951,27 +945,38 @@ function updateNextPrayerBox() {
     if (!container || !modeCountdown || !modeStatic) return;
 
     const now       = new Date();
+    const hours     = now.getHours();   // 0–23
     const asrTime   = parseTimeString(BASE_PRAYER_TIMES.asr);
     const ishaTime  = parseTimeString(BASE_PRAYER_TIMES.isha);
+    const fajrTime  = parseTimeString(BASE_PRAYER_TIMES.fajr);
     const iftarDate = getTodayIftar();
-    const sehrDate  = getTodaySehr();
 
-    // Determine which mode to show
-    // After Isha (or midnight → before fajr): show TOMORROW's sehri
-    const fajrTime = parseTimeString(BASE_PRAYER_TIMES.fajr);
-    const isAfterIsha   = now >= ishaTime;
-    const isBeforeFajr  = now < fajrTime;  // handles midnight wrap when < fajr
+    const isAfterIsha  = now >= ishaTime;
+    const isAfterMidnight = hours >= 0 && hours < fajrTime.getHours(); // midnight → before fajr hour
+    const isBeforeFajr = now < fajrTime;
 
-    if (isAfterIsha || isBeforeFajr) {
-        // Show tomorrow's sehri
-        const nextSehr = getTomorrowSehr() || getTodaySehr();
-        if (nextSehr) {
+    if (isAfterIsha || (isBeforeFajr && isAfterMidnight)) {
+        // Determine whether to show today's or tomorrow's sehri
+        let sehrDate;
+        let sehrLabel;
+
+        if (isAfterIsha) {
+            // After Isha but still same calendar day → show TOMORROW's sehri
+            sehrDate  = getSehrForDateOffset(1);
+            sehrLabel = "TOMORROW'S SUHOOR ENDS AT";
+        } else {
+            // After midnight, before Fajr → show TODAY's sehri
+            sehrDate  = getSehrForDateOffset(0);
+            sehrLabel = "SUHOOR ENDS AT";
+        }
+
+        if (sehrDate) {
             modeCountdown.style.display = 'none';
             modeStatic.style.display    = 'block';
             container.className = 'next-prayer mode-sehri';
-            if (staticLabel) staticLabel.textContent = 'SEHRI ENDS AT';
+            if (staticLabel) staticLabel.textContent = sehrLabel;
             if (staticName)  staticName.textContent  = 'Suhoor';
-            if (staticTime)  staticTime.textContent  = formatTime12(nextSehr);
+            if (staticTime)  staticTime.textContent  = formatTime12(sehrDate);
             return;
         }
     }
@@ -997,7 +1002,6 @@ function findNextPrayer() {
     const now = new Date();
     const maghribDate = getTodayMaghrib();
 
-    // Friday Jumu'ah override
     if (now.getDay() === 5) {
         const jummahTime = parseTimeString(BASE_PRAYER_TIMES.fridayPrayer);
         const fajrTime   = parseTimeString(BASE_PRAYER_TIMES.fajr);
@@ -1040,7 +1044,6 @@ function updateTodayDisplay() {
     document.getElementById('today-isha').textContent    = BASE_PRAYER_TIMES.isha;
     document.getElementById('today-friday-prayer').textContent = BASE_PRAYER_TIMES.fridayPrayer;
 
-    // Maghrib = Iftar + 5 min
     const maghrib = getTodayMaghrib();
     document.getElementById('today-maghrib').textContent = formatTime12(maghrib);
 }
