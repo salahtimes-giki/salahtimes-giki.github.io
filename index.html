@@ -565,7 +565,7 @@
             </div>
             <div class="countdown" id="countdown">00:00:00</div>
         </div>
-        <!-- Static display mode: after Asr → Iftar | after Isha → Sehri -->
+        <!-- Static display mode: after Asr (before iftar) → Iftar | after Isha → Sehri -->
         <div id="mode-static" style="display:none;">
             <h2 id="static-label">IFTAR STARTS AT</h2>
             <div class="next-prayer-name" id="static-name">Iftar</div>
@@ -929,11 +929,11 @@ function updateRamadanBanner() {
 
 // ── NEXT PRAYER BOX MODES ────────────────────────────────
 /**
- * Suhoor display logic:
- *   • After Isha, before midnight (23:59:59)  → show TOMORROW's sehri
- *   • After midnight (00:00:00), before Fajr  → show TODAY's sehri
- *   • After Asr, before Isha                  → show today's Iftar time
- *   • All other times                         → normal prayer countdown
+ * Logic:
+ *   • After Asr, BEFORE iftar time         → show static "Iftar starts at"
+ *   • After Isha (same calendar day)       → show TOMORROW's sehri end time
+ *   • After midnight, before Fajr          → show TODAY's sehri end time
+ *   • All other times                      → normal prayer countdown
  */
 function updateNextPrayerBox() {
     const container     = document.getElementById('next-prayer-container');
@@ -945,56 +945,59 @@ function updateNextPrayerBox() {
     if (!container || !modeCountdown || !modeStatic) return;
 
     const now       = new Date();
-    const hours     = now.getHours();   // 0–23
+    const hours     = now.getHours();
     const asrTime   = parseTimeString(BASE_PRAYER_TIMES.asr);
     const ishaTime  = parseTimeString(BASE_PRAYER_TIMES.isha);
     const fajrTime  = parseTimeString(BASE_PRAYER_TIMES.fajr);
     const iftarDate = getTodayIftar();
 
-    const isAfterIsha  = now >= ishaTime;
-    const isAfterMidnight = hours >= 0 && hours < fajrTime.getHours(); // midnight → before fajr hour
-    const isBeforeFajr = now < fajrTime;
+    const isAfterIsha     = now >= ishaTime;
+    const isAfterMidnight = hours >= 0 && hours < fajrTime.getHours();
+    const isBeforeFajr    = now < fajrTime;
 
-    if (isAfterIsha || (isBeforeFajr && isAfterMidnight)) {
-        // Determine whether to show today's or tomorrow's sehri
-        let sehrDate;
-        let sehrLabel;
-
-        if (isAfterIsha) {
-            // After Isha but still same calendar day → show TOMORROW's sehri
-            sehrDate  = getSehrForDateOffset(1);
-            sehrLabel = "TOMORROW'S SUHOOR ENDS AT";
-        } else {
-            // After midnight, before Fajr → show TODAY's sehri
-            sehrDate  = getSehrForDateOffset(0);
-            sehrLabel = "SUHOOR ENDS AT";
-        }
-
+    // After Isha → show tomorrow's sehri
+    if (isAfterIsha) {
+        const sehrDate = getSehrForDateOffset(1);
         if (sehrDate) {
             modeCountdown.style.display = 'none';
             modeStatic.style.display    = 'block';
             container.className = 'next-prayer mode-sehri';
-            if (staticLabel) staticLabel.textContent = sehrLabel;
+            if (staticLabel) staticLabel.textContent = "TOMORROW'S SUHOOR ENDS AT";
             if (staticName)  staticName.textContent  = 'Suhoor';
             if (staticTime)  staticTime.textContent  = formatTime12(sehrDate);
             return;
         }
     }
 
-    if (now >= asrTime && now < ishaTime && iftarDate) {
-        // After Asr, before Isha → show Iftar start time
+    // After midnight, before Fajr → show today's sehri
+    if (isBeforeFajr && isAfterMidnight) {
+        const sehrDate = getSehrForDateOffset(0);
+        if (sehrDate) {
+            modeCountdown.style.display = 'none';
+            modeStatic.style.display    = 'block';
+            container.className = 'next-prayer mode-sehri';
+            if (staticLabel) staticLabel.textContent = 'SUHOOR ENDS AT';
+            if (staticName)  staticName.textContent  = 'Suhoor';
+            if (staticTime)  staticTime.textContent  = formatTime12(sehrDate);
+            return;
+        }
+    }
+
+    // After Asr but BEFORE iftar → show Iftar time
+    if (now >= asrTime && iftarDate && now < iftarDate) {
         modeCountdown.style.display = 'none';
         modeStatic.style.display    = 'block';
         container.className = 'next-prayer mode-iftar';
         if (staticLabel) staticLabel.textContent = 'IFTAR STARTS AT';
         if (staticName)  staticName.textContent  = 'Iftar';
         if (staticTime)  staticTime.textContent  = formatTime12(iftarDate);
-    } else {
-        // Normal mode: show prayer countdown
-        modeCountdown.style.display = 'block';
-        modeStatic.style.display    = 'none';
-        container.className = 'next-prayer';
+        return;
     }
+
+    // Default: normal prayer countdown (covers Fajr→Dhuhr→Asr and Iftar→Maghrib→Isha)
+    modeCountdown.style.display = 'block';
+    modeStatic.style.display    = 'none';
+    container.className = 'next-prayer';
 }
 
 // ── PRAYER COUNTDOWN ──────────────────────────────────────
